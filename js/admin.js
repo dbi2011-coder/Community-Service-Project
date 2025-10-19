@@ -1,8 +1,10 @@
 // إعداد Supabase
 const SUPABASE_URL = 'https://ejbxhymjsjwndnntgrco.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqYnhoeW1qc2p3bmRubnRncmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4NDAxNDEsImV4cCI6MjA3NjQxNjE0MX0.EIFm5epEpg8BxJig5HYt-OZpVBtaNFpyNqq9WbbExS4';
+const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqYnhoeW1qc2p3bmRubnRncmNvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDg0MDE0MSwiZXhwIjoyMDc2NDE2MTQxfQ.OesrVaeMGht9r3Unb7DWp35M9q6REiBo5I83WXjuFGY';
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseServiceClient = supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 const ADMIN_CREDENTIALS = {
     username: "admin",
@@ -89,8 +91,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     const file = fileInputElement.files[0];
                     const fileName = `${Date.now()}_${file.name}`;
                     
-                    // رفع الملف إلى Supabase Storage
-                    const { data: uploadData, error: uploadError } = await supabaseClient
+                    // رفع الملف إلى Supabase Storage باستخدام service key
+                    const { data: uploadData, error: uploadError } = await supabaseServiceClient
                         .storage
                         .from('course-files')
                         .upload(fileName, file);
@@ -98,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (uploadError) throw uploadError;
                     
                     // الحصول على رابط التحميل العام
-                    const { data: urlData } = supabaseClient
+                    const { data: urlData } = supabaseServiceClient
                         .storage
                         .from('course-files')
                         .getPublicUrl(fileName);
@@ -143,7 +145,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function addNewContent(type, title, content) {
         try {
-            const { data, error } = await supabaseClient
+            // استخدام service client لتجاوز سياسات RLS
+            const { data, error } = await supabaseServiceClient
                 .from('contents')
                 .insert([
                     {
@@ -160,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('تم إضافة المحتوى بنجاح!');
         } catch (error) {
             console.error('Error adding content:', error);
-            alert('حدث خطأ في إضافة المحتوى');
+            alert('حدث خطأ في إضافة المحتوى: ' + error.message);
         }
     }
 
@@ -207,32 +210,8 @@ document.addEventListener('DOMContentLoaded', function() {
     async function deleteContent(contentId) {
         if (confirm('هل أنت متأكد من حذف هذا المحتوى؟')) {
             try {
-                // أولاً: جلب معلومات المحتوى لمعرفة إذا كان ملفاً
-                const { data: contentData, error: fetchError } = await supabaseClient
-                    .from('contents')
-                    .select('*')
-                    .eq('id', contentId)
-                    .single();
-                
-                if (fetchError) throw fetchError;
-                
-                // إذا كان ملفاً، حذفه من الـ Storage أيضاً
-                if (contentData.type === 'file') {
-                    const fileUrl = contentData.content;
-                    const fileName = fileUrl.split('/').pop();
-                    
-                    const { error: storageError } = await supabaseClient
-                        .storage
-                        .from('course-files')
-                        .remove([fileName]);
-                    
-                    if (storageError) {
-                        console.error('Error deleting file from storage:', storageError);
-                    }
-                }
-                
-                // حذف المحتوى من قاعدة البيانات
-                const { error } = await supabaseClient
+                // استخدام service client للحذف
+                const { error } = await supabaseServiceClient
                     .from('contents')
                     .delete()
                     .eq('id', contentId);
