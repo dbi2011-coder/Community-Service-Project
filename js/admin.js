@@ -66,23 +66,41 @@ document.addEventListener('DOMContentLoaded', function() {
         switch(type) {
             case 'link':
                 contentValue = document.getElementById('contentLink').value.trim();
+                if (title && contentValue) {
+                    await addNewContent(type, title, contentValue);
+                    uploadForm.reset();
+                } else {
+                    alert('يرجى ملء جميع الحقول المطلوبة');
+                }
                 break;
             case 'file':
                 const file = document.getElementById('contentFile').files[0];
                 if (file) {
-                    contentValue = URL.createObjectURL(file);
+                    // تحويل الملف إلى رابط قاعدة 64
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        contentValue = e.target.result;
+                        if (title && contentValue) {
+                            await addNewContent(type, title, contentValue);
+                            uploadForm.reset();
+                        } else {
+                            alert('يرجى ملء جميع الحقول المطلوبة');
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('يرجى اختيار ملف');
                 }
                 break;
             case 'text':
                 contentValue = document.getElementById('contentText').value.trim();
+                if (title && contentValue) {
+                    await addNewContent(type, title, contentValue);
+                    uploadForm.reset();
+                } else {
+                    alert('يرجى ملء جميع الحقول المطلوبة');
+                }
                 break;
-        }
-        
-        if (title && contentValue) {
-            await addNewContent(type, title, contentValue);
-            uploadForm.reset();
-        } else {
-            alert('يرجى ملء جميع الحقول المطلوبة');
         }
     });
 
@@ -91,9 +109,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function checkAdminLogin() {
-        if (localStorage.getItem('adminLoggedIn') === 'true') {
-            showAdminPanel();
-        }
+        // إعادة تعيين تسجيل الدخول في كل مرة - حل المشكلة الأولى
+        localStorage.setItem('adminLoggedIn', 'false');
+        adminLoginSection.classList.remove('hidden');
+        adminPanel.classList.add('hidden');
     }
 
     function showAdminPanel() {
@@ -153,11 +172,20 @@ document.addEventListener('DOMContentLoaded', function() {
         contents.forEach(content => {
             const fileElement = document.createElement('div');
             fileElement.className = 'file-item';
+            
+            let contentPreview = '';
+            if (content.type === 'file') {
+                contentPreview = `<p><strong>ملف:</strong> ${content.title}</p>`;
+            } else {
+                contentPreview = `<p><strong>${content.title}</strong></p>`;
+            }
+            
             fileElement.innerHTML = `
                 <div class="file-info">
                     <h4>${content.title}</h4>
                     <p>نوع: ${getContentTypeText(content.type)}</p>
                     <p>تاريخ الإضافة: ${new Date(content.created_at).toLocaleString('ar-SA')}</p>
+                    ${contentPreview}
                 </div>
                 <button class="btn delete-btn" onclick="deleteContent(${content.id})">حذف</button>
             `;
