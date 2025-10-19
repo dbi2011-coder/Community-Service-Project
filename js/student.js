@@ -1,3 +1,9 @@
+// إعداد Supabase
+const SUPABASE_URL = 'https://ejbxhymjsjwndnntgrco.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqYnhoeW1qc2p3bmRubnRncmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4NDAxNDEsImV4cCI6MjA3NjQxNjE0MX0.EIFm5epEpg8BxJig5HYt-OZpVBtaNFpyNqq9WbbExS4';
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('studentLoginForm');
     const contentSection = document.getElementById('contentSection');
@@ -5,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let currentStudent = '';
     
-    // التعامل مع تسجيل الدخول
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         const studentName = document.getElementById('studentName').value.trim();
@@ -18,10 +23,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // تحميل محتويات الطالب
-    function loadStudentContents() {
-        const contents = getContents();
-        const studentLogs = getStudentLogs();
+    async function loadStudentContents() {
+        const contents = await getContents();
+        const studentLogs = await getStudentLogs();
         
         filesContainer.innerHTML = '';
         
@@ -32,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         contents.forEach(content => {
             const hasViewed = studentLogs.some(log => 
-                log.studentName === currentStudent && log.contentId === content.id
+                log.student_name === currentStudent && log.content_id === content.id
             );
             
             const contentElement = document.createElement('div');
@@ -61,7 +65,6 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             filesContainer.appendChild(contentElement);
             
-            // إضافة event listener للcheckbox
             if (!hasViewed) {
                 const checkbox = document.getElementById(`agreement-${content.id}`);
                 const viewBtn = contentElement.querySelector('.view-btn');
@@ -101,37 +104,65 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function getContents() {
-        return JSON.parse(localStorage.getItem('adminContents')) || [];
+    async function getContents() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('contents')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            return data || [];
+        } catch (error) {
+            console.error('Error fetching contents:', error);
+            return [];
+        }
     }
     
-    function getStudentLogs() {
-        return JSON.parse(localStorage.getItem('studentsLog')) || [];
+    async function getStudentLogs() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('student_logs')
+                .select('*');
+            
+            if (error) throw error;
+            return data || [];
+        } catch (error) {
+            console.error('Error fetching student logs:', error);
+            return [];
+        }
     }
     
     function getViewDate(logs, contentId) {
         const log = logs.find(log => 
-            log.studentName === currentStudent && log.contentId === contentId
+            log.student_name === currentStudent && log.content_id === contentId
         );
-        return log ? `${log.date} ${log.time}` : '';
+        return log ? `${log.view_date} ${log.view_time}` : '';
     }
     
-    // جعل الدوال متاحة globally
-    window.viewContent = function(contentId, contentTitle) {
-        const studentsLog = getStudentLogs();
-        const now = new Date();
-        
-        studentsLog.push({
-            studentName: currentStudent,
-            contentId: contentId,
-            contentTitle: contentTitle,
-            date: now.toLocaleDateString('ar-SA'),
-            time: now.toLocaleTimeString('ar-SA'),
-            timestamp: now.getTime()
-        });
-        
-        localStorage.setItem('studentsLog', JSON.stringify(studentsLog));
-        loadStudentContents();
-        alert('تم تسجيل الاطلاع بنجاح!');
+    window.viewContent = async function(contentId, contentTitle) {
+        try {
+            const now = new Date();
+            const { error } = await supabaseClient
+                .from('student_logs')
+                .insert([
+                    {
+                        student_name: currentStudent,
+                        content_id: contentId,
+                        content_title: contentTitle,
+                        view_date: now.toLocaleDateString('ar-SA'),
+                        view_time: now.toLocaleTimeString('ar-SA'),
+                        timestamp: now.getTime()
+                    }
+                ]);
+            
+            if (error) throw error;
+            
+            loadStudentContents();
+            alert('تم تسجيل الاطلاع بنجاح!');
+        } catch (error) {
+            console.error('Error logging view:', error);
+            alert('حدث خطأ في تسجيل الاطلاع');
+        }
     };
 });
