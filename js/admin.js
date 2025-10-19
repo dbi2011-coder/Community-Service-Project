@@ -1,274 +1,108 @@
-// إعداد Supabase
-const SUPABASE_URL = 'https://ejbxhymjsjwndnntgrco.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqYnhoeW1qc2p3bmRubnRncmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4NDAxNDEsImV4cCI6MjA3NjQxNjE0MX0.EIFm5epEpg8BxJig5HYt-OZpVBtaNFpyNqq9WbbExS4';
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqYnhoeW1qc2p3bmRubnRncmNvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDg0MDE0MSwiZXhwIjoyMDc2NDE2MTQxfQ.OesrVaeMGht9r3Unb7DWp35M9q6REiBo5I83WXjuFGY';
-
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const supabaseServiceClient = supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
-const ADMIN_CREDENTIALS = {
-    username: "admin",
-    password: "admin123"
-};
-
-document.addEventListener('DOMContentLoaded', function() {
-    const adminLoginSection = document.getElementById('adminLoginSection');
-    const adminPanel = document.getElementById('adminPanel');
-    const adminLoginForm = document.getElementById('adminLoginForm');
-    const contentType = document.getElementById('contentType');
-    const linkInput = document.getElementById('linkInput');
-    const fileInput = document.getElementById('fileInput');
-    const textInput = document.getElementById('textInput');
-    const uploadForm = document.getElementById('uploadForm');
-    const filesList = document.getElementById('filesList');
-    const studentsTableBody = document.getElementById('studentsTableBody');
-    const printBtn = document.getElementById('printBtn');
-
-    checkAdminLogin();
-
-    adminLoginForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const username = document.getElementById('adminUsername').value.trim();
-        const password = document.getElementById('adminPassword').value.trim();
-        
-        if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-            localStorage.setItem('adminLoggedIn', 'true');
-            showAdminPanel();
-        } else {
-            alert('اسم المستخدم أو كلمة المرور غير صحيحة');
-        }
-    });
-
-    contentType.addEventListener('change', function() {
-        linkInput.classList.add('hidden');
-        fileInput.classList.add('hidden');
-        textInput.classList.add('hidden');
-        
-        switch(this.value) {
-            case 'link':
-                linkInput.classList.remove('hidden');
-                break;
-            case 'file':
-                fileInput.classList.remove('hidden');
-                break;
-            case 'text':
-                textInput.classList.remove('hidden');
-                break;
-        }
-    });
-
-    uploadForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const type = contentType.value;
-        const title = document.getElementById('contentTitle').value.trim();
-        
-        if (!title) {
-            alert('يرجى إدخال عنوان المحتوى');
-            return;
-        }
-        
-        try {
-            let contentValue = '';
-            
-            switch(type) {
-                case 'link':
-                    contentValue = document.getElementById('contentLink').value.trim();
-                    if (!contentValue) {
-                        alert('يرجى إدخال الرابط');
-                        return;
-                    }
-                    break;
-                    
-                case 'file':
-                    const fileInputElement = document.getElementById('contentFile');
-                    if (!fileInputElement.files[0]) {
-                        alert('يرجى اختيار ملف');
-                        return;
-                    }
-                    
-                    const file = fileInputElement.files[0];
-                    const fileName = `${Date.now()}_${file.name}`;
-                    
-                    // رفع الملف إلى Supabase Storage باستخدام service key
-                    const { data: uploadData, error: uploadError } = await supabaseServiceClient
-                        .storage
-                        .from('course-files')
-                        .upload(fileName, file);
-                    
-                    if (uploadError) throw uploadError;
-                    
-                    // الحصول على رابط التحميل العام
-                    const { data: urlData } = supabaseServiceClient
-                        .storage
-                        .from('course-files')
-                        .getPublicUrl(fileName);
-                    
-                    contentValue = urlData.publicUrl;
-                    break;
-                    
-                case 'text':
-                    contentValue = document.getElementById('contentText').value.trim();
-                    if (!contentValue) {
-                        alert('يرجى إدخال النص');
-                        return;
-                    }
-                    break;
-            }
-            
-            await addNewContent(type, title, contentValue);
-            uploadForm.reset();
-            
-        } catch (error) {
-            console.error('Error uploading content:', error);
-            alert('حدث خطأ في رفع المحتوى: ' + error.message);
-        }
-    });
-
-    printBtn.addEventListener('click', function() {
-        window.print();
-    });
-
-    function checkAdminLogin() {
-        localStorage.setItem('adminLoggedIn', 'false');
-        adminLoginSection.classList.remove('hidden');
-        adminPanel.classList.add('hidden');
+uploadForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const type = contentType.value;
+    const title = document.getElementById('contentTitle').value.trim();
+    
+    if (!title) {
+        alert('يرجى إدخال عنوان المحتوى');
+        return;
     }
-
-    function showAdminPanel() {
-        adminLoginSection.classList.add('hidden');
-        adminPanel.classList.remove('hidden');
-        loadFilesList();
-        loadStudentsList();
-    }
-
-    async function addNewContent(type, title, content) {
-        try {
-            // استخدام service client لتجاوز سياسات RLS
-            const { data, error } = await supabaseServiceClient
-                .from('contents')
-                .insert([
-                    {
-                        type: type,
-                        title: title,
-                        content: content
-                    }
-                ])
-                .select();
-            
-            if (error) throw error;
-            
-            loadFilesList();
-            alert('تم إضافة المحتوى بنجاح!');
-        } catch (error) {
-            console.error('Error adding content:', error);
-            alert('حدث خطأ في إضافة المحتوى: ' + error.message);
-        }
-    }
-
-    async function getContents() {
-        try {
-            const { data, error } = await supabaseClient
-                .from('contents')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
-            if (error) throw error;
-            return data || [];
-        } catch (error) {
-            console.error('Error fetching contents:', error);
-            return [];
-        }
-    }
-
-    async function loadFilesList() {
-        const contents = await getContents();
-        filesList.innerHTML = '';
+    
+    // إظهار تحميل
+    const submitBtn = uploadForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'جاري الرفع...';
+    submitBtn.disabled = true;
+    
+    try {
+        let contentValue = '';
         
-        if (contents.length === 0) {
-            filesList.innerHTML = '<p class="no-files">لا توجد محتويات مضافة</p>';
-            return;
-        }
-        
-        contents.forEach(content => {
-            const fileElement = document.createElement('div');
-            fileElement.className = 'file-item';
+        if (type === 'file') {
+            const fileInput = document.getElementById('contentFile');
+            const file = fileInput.files[0];
             
-            fileElement.innerHTML = `
-                <div class="file-info">
-                    <h4>${content.title}</h4>
-                    <p>نوع: ${getContentTypeText(content.type)}</p>
-                    <p>تاريخ الإضافة: ${new Date(content.created_at).toLocaleString('ar-SA')}</p>
-                </div>
-                <button class="btn delete-btn" onclick="deleteContent(${content.id})">حذف</button>
-            `;
-            filesList.appendChild(fileElement);
-        });
-    }
-
-    async function deleteContent(contentId) {
-        if (confirm('هل أنت متأكد من حذف هذا المحتوى؟')) {
-            try {
-                // استخدام service client للحذف
-                const { error } = await supabaseServiceClient
-                    .from('contents')
-                    .delete()
-                    .eq('id', contentId);
-                
-                if (error) throw error;
-                
-                loadFilesList();
-                alert('تم حذف المحتوى بنجاح!');
-                
-            } catch (error) {
-                console.error('Error deleting content:', error);
-                alert('حدث خطأ في حذف المحتوى');
-            }
-        }
-    }
-
-    async function loadStudentsList() {
-        try {
-            const { data, error } = await supabaseClient
-                .from('student_logs')
-                .select('*')
-                .order('timestamp', { ascending: false });
-            
-            if (error) throw error;
-            
-            const studentsLog = data || [];
-            studentsTableBody.innerHTML = '';
-            
-            if (studentsLog.length === 0) {
-                studentsTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">لا توجد بيانات</td></tr>';
+            if (!file) {
+                alert('يرجى اختيار ملف');
                 return;
             }
             
-            studentsLog.forEach(log => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${log.student_name}</td>
-                    <td>${log.content_title}</td>
-                    <td>${log.view_date}</td>
-                    <td>${log.view_time}</td>
-                `;
-                studentsTableBody.appendChild(row);
-            });
-        } catch (error) {
-            console.error('Error loading students list:', error);
+            // التحقق من حجم الملف (5 MB كحد أقصى)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('حجم الملف كبير جداً. الحد الأقصى 5 MB');
+                return;
+            }
+            
+            // اسم فريد للملف
+            const fileExt = file.name.split('.').pop();
+            const fileName = `file_${Date.now()}.${fileExt}`;
+            
+            console.log('بدء رفع الملف:', fileName, 'الحجم:', file.size);
+            
+            // رفع الملف إلى Storage
+            const { data: uploadData, error: uploadError } = await supabaseClient
+                .storage
+                .from('course-files')
+                .upload(fileName, file);
+            
+            if (uploadError) {
+                console.error('خطأ في رفع الملف:', uploadError);
+                throw new Error(`فشل رفع الملف: ${uploadError.message}`);
+            }
+            
+            // الحصول على الرابط العام
+            const { data: urlData } = supabaseClient
+                .storage
+                .from('course-files')
+                .getPublicUrl(fileName);
+            
+            contentValue = urlData.publicUrl;
+            console.log('تم الرفع بنجاح:', contentValue);
+            
+        } else if (type === 'link') {
+            contentValue = document.getElementById('contentLink').value.trim();
+            if (!contentValue) {
+                alert('يرجى إدخال الرابط');
+                return;
+            }
+        } else if (type === 'text') {
+            contentValue = document.getElementById('contentText').value.trim();
+            if (!contentValue) {
+                alert('يرجى إدخال النص');
+                return;
+            }
         }
+        
+        // إضافة المحتوى إلى قاعدة البيانات
+        console.log('إضافة إلى قاعدة البيانات...');
+        const { data, error } = await supabaseClient
+            .from('contents')
+            .insert([
+                {
+                    type: type,
+                    title: title,
+                    content: contentValue
+                }
+            ])
+            .select();
+        
+        if (error) {
+            console.error('خطأ في قاعدة البيانات:', error);
+            throw new Error(`فشل حفظ البيانات: ${error.message}`);
+        }
+        
+        // إعادة تعيين النموذج
+        uploadForm.reset();
+        loadFilesList(); // تحديث القائمة
+        
+        alert('تم إضافة المحتوى بنجاح! ✅');
+        
+    } catch (error) {
+        console.error('خطأ كامل:', error);
+        alert('❌ حدث خطأ: ' + error.message);
+    } finally {
+        // إعادة زر الإرسال
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
     }
-
-    function getContentTypeText(type) {
-        const types = {
-            'link': 'رابط',
-            'file': 'ملف',
-            'text': 'نص'
-        };
-        return types[type] || type;
-    }
-
-    window.deleteContent = deleteContent;
-    setInterval(loadStudentsList, 10000);
 });
