@@ -61,46 +61,66 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const type = contentType.value;
         const title = document.getElementById('contentTitle').value.trim();
-        let contentValue = '';
         
-        switch(type) {
-            case 'link':
-                contentValue = document.getElementById('contentLink').value.trim();
-                if (title && contentValue) {
-                    await addNewContent(type, title, contentValue);
-                    uploadForm.reset();
-                } else {
-                    alert('يرجى ملء جميع الحقول المطلوبة');
-                }
-                break;
-            case 'file':
-                const file = document.getElementById('contentFile').files[0];
-                if (file) {
-                    // تحويل الملف إلى رابط قاعدة 64
-                    const reader = new FileReader();
-                    reader.onload = async function(e) {
-                        contentValue = e.target.result;
-                        if (title && contentValue) {
-                            await addNewContent(type, title, contentValue);
-                            uploadForm.reset();
-                        } else {
-                            alert('يرجى ملء جميع الحقول المطلوبة');
-                        }
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    alert('يرجى اختيار ملف');
-                }
-                break;
-            case 'text':
-                contentValue = document.getElementById('contentText').value.trim();
-                if (title && contentValue) {
-                    await addNewContent(type, title, contentValue);
-                    uploadForm.reset();
-                } else {
-                    alert('يرجى ملء جميع الحقول المطلوبة');
-                }
-                break;
+        if (!title) {
+            alert('يرجى إدخال عنوان المحتوى');
+            return;
+        }
+        
+        try {
+            let contentValue = '';
+            
+            switch(type) {
+                case 'link':
+                    contentValue = document.getElementById('contentLink').value.trim();
+                    if (!contentValue) {
+                        alert('يرجى إدخال الرابط');
+                        return;
+                    }
+                    break;
+                    
+                case 'file':
+                    const fileInputElement = document.getElementById('contentFile');
+                    if (!fileInputElement.files[0]) {
+                        alert('يرجى اختيار ملف');
+                        return;
+                    }
+                    
+                    const file = fileInputElement.files[0];
+                    const fileName = `${Date.now()}_${file.name}`;
+                    
+                    // رفع الملف إلى Supabase Storage
+                    const { data: uploadData, error: uploadError } = await supabaseClient
+                        .storage
+                        .from('course-files')
+                        .upload(fileName, file);
+                    
+                    if (uploadError) throw uploadError;
+                    
+                    // الحصول على رابط التحميل العام
+                    const { data: urlData } = supabaseClient
+                        .storage
+                        .from('course-files')
+                        .getPublicUrl(fileName);
+                    
+                    contentValue = urlData.publicUrl;
+                    break;
+                    
+                case 'text':
+                    contentValue = document.getElementById('contentText').value.trim();
+                    if (!contentValue) {
+                        alert('يرجى إدخال النص');
+                        return;
+                    }
+                    break;
+            }
+            
+            await addNewContent(type, title, contentValue);
+            uploadForm.reset();
+            
+        } catch (error) {
+            console.error('Error uploading content:', error);
+            alert('حدث خطأ في رفع المحتوى: ' + error.message);
         }
     });
 
@@ -109,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function checkAdminLogin() {
-        // إعادة تعيين تسجيل الدخول في كل مرة - حل المشكلة الأولى
         localStorage.setItem('adminLoggedIn', 'false');
         adminLoginSection.classList.remove('hidden');
         adminPanel.classList.add('hidden');
@@ -173,19 +192,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const fileElement = document.createElement('div');
             fileElement.className = 'file-item';
             
-            let contentPreview = '';
-            if (content.type === 'file') {
-                contentPreview = `<p><strong>ملف:</strong> ${content.title}</p>`;
-            } else {
-                contentPreview = `<p><strong>${content.title}</strong></p>`;
-            }
-            
             fileElement.innerHTML = `
                 <div class="file-info">
                     <h4>${content.title}</h4>
                     <p>نوع: ${getContentTypeText(content.type)}</p>
                     <p>تاريخ الإضافة: ${new Date(content.created_at).toLocaleString('ar-SA')}</p>
-                    ${contentPreview}
                 </div>
                 <button class="btn delete-btn" onclick="deleteContent(${content.id})">حذف</button>
             `;
@@ -196,13 +207,41 @@ document.addEventListener('DOMContentLoaded', function() {
     async function deleteContent(contentId) {
         if (confirm('هل أنت متأكد من حذف هذا المحتوى؟')) {
             try {
+                // أولاً: جلب معلومات المحتوى لمعرفة إذا كان ملفاً
+                const { data: contentData, error: fetchError } = await supabaseClient
+                    .from('contents')
+                    .select('*')
+                    .eq('id', contentId)
+                    .single();
+                
+                if (fetchError) throw fetchError;
+                
+                // إذا كان ملفاً، حذفه من الـ Storage أيضاً
+                if (contentData.type === 'file') {
+                    const fileUrl = contentData.content;
+                    const fileName = fileUrl.split('/').pop();
+                    
+                    const { error: storageError } = await supabaseClient
+                        .storage
+                        .from('course-files')
+                        .remove([fileName]);
+                    
+                    if (storageError) {
+                        console.error('Error deleting file from storage:', storageError);
+                    }
+                }
+                
+                // حذف المحتوى من قاعدة البيانات
                 const { error } = await supabaseClient
                     .from('contents')
                     .delete()
                     .eq('id', contentId);
                 
                 if (error) throw error;
+                
                 loadFilesList();
+                alert('تم حذف المحتوى بنجاح!');
+                
             } catch (error) {
                 console.error('Error deleting content:', error);
                 alert('حدث خطأ في حذف المحتوى');
