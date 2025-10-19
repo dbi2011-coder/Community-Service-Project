@@ -90,9 +90,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 return `
                     <div class="content-preview">
                         <p>ملف مرفوع:</p>
-                        <a href="${content.content}" download class="file-link" onclick="event.stopPropagation()">
+                        <a href="${content.content}" download="${content.title}.file" class="file-link" onclick="event.stopPropagation()">
                             اضغط هنا لتحميل الملف
                         </a>
+                        <p style="margin-top: 10px; font-size: 14px; color: #666;">
+                            <strong>ملاحظة:</strong> الملف سيتم تحميله على جهازك
+                        </p>
                     </div>`;
             case 'text':
                 return `
