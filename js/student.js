@@ -97,6 +97,20 @@ document.addEventListener('DOMContentLoaded', function() {
                         <h4>${content.title}</h4>
                         <p>${content.content}</p>
                     </div>`;
+            case 'fileWithNote':
+                return `
+                    <div class="content-preview">
+                        <p>ملف مرفوع:</p>
+                        <a href="${content.content}" download="${content.title}" class="file-link" onclick="event.stopPropagation()">
+                            ${content.title} - اضغط هنا لتحميل الملف
+                        </a>
+                        ${content.note ? `
+                            <div class="note-section">
+                                <h4>ملاحظة:</h4>
+                                <p class="note-text">${content.note}</p>
+                            </div>
+                        ` : ''}
+                    </div>`;
             default:
                 return '<p>نوع المحتوى غير معروف</p>';
         }
