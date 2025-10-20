@@ -39,6 +39,7 @@
 
             <!-- لوحة التحكم (تظهر بعد تسجيل الدخول) -->
             <div id="adminPanel" class="hidden">
+                <!-- قسم إدارة المحتوى -->
                 <div class="admin-panel">
                     <div class="upload-section">
                         <h2>إدارة المحتوى</h2>
@@ -68,7 +69,6 @@
                                 <textarea id="contentText" rows="5" placeholder="أدخل النص هنا..."></textarea>
                             </div>
 
-                            <!-- قسم جديد لملف مع ملاحظة -->
                             <div class="form-group hidden" id="fileWithNoteInput">
                                 <div class="file-note-group">
                                     <div class="form-group">
@@ -99,20 +99,56 @@
                     </div>
                 </div>
 
-                <div class="students-list-section">
-                    <h2>قائمة المطلعين</h2>
+                <!-- قسم إدارة الزوار -->
+                <div class="visitors-management-section">
+                    <h2>إدارة الزوار</h2>
+                    
+                    <!-- قسم البحث والتصفية -->
+                    <div class="search-section">
+                        <div class="form-group">
+                            <label for="searchVisitor">بحث عن زائر:</label>
+                            <input type="text" id="searchVisitor" placeholder="ابحث بالاسم أو رقم الهوية...">
+                        </div>
+                    </div>
+
+                    <div class="visitors-list-section">
+                        <h3>قائمة الزوار المسجلين</h3>
+                        <div class="table-container">
+                            <table id="visitorsDataTable">
+                                <thead>
+                                    <tr>
+                                        <th>الاسم</th>
+                                        <th>رقم الهوية</th>
+                                        <th>رقم الجوال</th>
+                                        <th>تاريخ التسجيل</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="visitorsDataTableBody">
+                                    <!-- سيتم ملء الجدول dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- قسم سجل المطلعين -->
+                <div class="visitors-list-section">
+                    <h2>سجل المطلعين</h2>
                     <button id="printBtn" class="btn secondary">طباعة القائمة</button>
                     <div class="table-container">
-                        <table id="studentsTable">
+                        <table id="visitorsTable">
                             <thead>
                                 <tr>
                                     <th>الاسم</th>
+                                    <th>رقم الهوية</th>
+                                    <th>رقم الجوال</th>
                                     <th>المحتوى</th>
                                     <th>التاريخ</th>
                                     <th>الوقت</th>
                                 </tr>
                             </thead>
-                            <tbody id="studentsTableBody">
+                            <tbody id="visitorsTableBody">
                                 <!-- سيتم ملء الجدول dynamically -->
                             </tbody>
                         </table>
@@ -120,6 +156,37 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- نافذة تعديل بيانات الزائر -->
+    <div id="editVisitorModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>تعديل بيانات الزائر</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editVisitorForm">
+                    <input type="hidden" id="editVisitorOriginalId">
+                    <div class="form-group">
+                        <label for="editVisitorName">الاسم الكامل:</label>
+                        <input type="text" id="editVisitorName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editVisitorId">رقم الهوية:</label>
+                        <input type="text" id="editVisitorId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editVisitorPhone">رقم الجوال:</label>
+                        <input type="tel" id="editVisitorPhone" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn">حفظ التعديلات</button>
+                        <button type="button" class="btn secondary" id="cancelEdit">إلغاء</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <script src="js/admin.js"></script>
