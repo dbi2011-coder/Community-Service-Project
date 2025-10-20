@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <input type="checkbox" id="agreement-${content.id}">
                             أوافق على أنني قد اطلعت على هذا المحتوى وأتعهد بالالتزام بما ورد فيه
                         </label>
-                        <button class="btn view-btn" onclick="viewContent('${content.id}', '${content.title}')" disabled>
+                        <button class="btn view-btn" onclick="viewContent(${content.id}, '${content.title.replace(/'/g, "\\'")}')" disabled>
                             تأكيد الاطلاع
                         </button>
                     ` : `
