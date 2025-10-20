@@ -13,44 +13,75 @@
                 <img src="assets/logo.png" alt="شعار المشروع" id="logo-img">
             </div>
             <h1>لوحة تحكم المشرف</h1>
+            <div class="credits">
+                <p>إعداد وتصميم: أ/ صالح عبد العزيز عبد الله العجلان</p>
+            </div>
         </header>
 
         <main class="main-content">
-            <div class="admin-panel">
-                <div class="upload-section">
-                    <h2>رفع المحتوى للزوار</h2>
-                    <form id="uploadForm">
+            <!-- قسم تسجيل الدخول -->
+            <div id="adminLoginSection">
+                <div class="login-form">
+                    <h2>تسجيل دخول مشرف البرنامج</h2>
+                    <form id="adminLoginForm">
                         <div class="form-group">
-                            <label>نوع المحتوى:</label>
-                            <select id="contentType">
-                                <option value="link">رابط</option>
-                                <option value="file">ملف</option>
-                                <option value="text">نص</option>
-                            </select>
+                            <label for="adminUsername">اسم المستخدم:</label>
+                            <input type="text" id="adminUsername" required>
                         </div>
-                        
-                        <div class="form-group" id="linkInput">
-                            <label for="contentLink">رابط المحتوى:</label>
-                            <input type="url" id="contentLink" placeholder="https://example.com">
-                        </div>
-                        
-                        <div class="form-group hidden" id="fileInput">
-                            <label for="contentFile">رفع ملف:</label>
-                            <input type="file" id="contentFile">
-                        </div>
-                        
-                        <div class="form-group hidden" id="textInput">
-                            <label for="contentText">النص:</label>
-                            <textarea id="contentText" rows="5" placeholder="أدخل النص هنا..."></textarea>
-                        </div>
-                        
                         <div class="form-group">
-                            <label for="contentTitle">عنوان المحتوى:</label>
-                            <input type="text" id="contentTitle" required>
+                            <label for="adminPassword">كلمة المرور:</label>
+                            <input type="password" id="adminPassword" required>
                         </div>
-                        
-                        <button type="submit" class="btn">حفظ المحتوى</button>
+                        <button type="submit" class="btn">دخول</button>
                     </form>
+                </div>
+            </div>
+
+            <!-- لوحة التحكم (تظهر بعد تسجيل الدخول) -->
+            <div id="adminPanel" class="hidden">
+                <div class="admin-panel">
+                    <div class="upload-section">
+                        <h2>إدارة المحتوى</h2>
+                        <form id="uploadForm">
+                            <div class="form-group">
+                                <label>نوع المحتوى:</label>
+                                <select id="contentType">
+                                    <option value="link">رابط</option>
+                                    <option value="file">ملف</option>
+                                    <option value="text">نص</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" id="linkInput">
+                                <label for="contentLink">رابط المحتوى:</label>
+                                <input type="url" id="contentLink" placeholder="https://example.com">
+                            </div>
+                            
+                            <div class="form-group hidden" id="fileInput">
+                                <label for="contentFile">رفع ملف:</label>
+                                <input type="file" id="contentFile">
+                            </div>
+                            
+                            <div class="form-group hidden" id="textInput">
+                                <label for="contentText">النص:</label>
+                                <textarea id="contentText" rows="5" placeholder="أدخل النص هنا..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="contentTitle">عنوان المحتوى:</label>
+                                <input type="text" id="contentTitle" required>
+                            </div>
+                            
+                            <button type="submit" class="btn">إضافة المحتوى</button>
+                        </form>
+                    </div>
+
+                    <div class="files-list-section">
+                        <h2>المحتويات المضافة</h2>
+                        <div class="files-list" id="filesList">
+                            <!-- سيتم ملؤها بالملفات -->
+                        </div>
+                    </div>
                 </div>
 
                 <div class="students-list-section">
@@ -61,6 +92,7 @@
                             <thead>
                                 <tr>
                                     <th>الاسم</th>
+                                    <th>المحتوى</th>
                                     <th>التاريخ</th>
                                     <th>الوقت</th>
                                 </tr>
