@@ -10,8 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('adminContents', JSON.stringify([]));
     }
     
-    if (!localStorage.getItem('studentsLog')) {
-        localStorage.setItem('studentsLog', JSON.stringify([]));
+    if (!localStorage.getItem('visitorsLog')) {
+        localStorage.setItem('visitorsLog', JSON.stringify([]));
+    }
+    
+    if (!localStorage.getItem('visitorsData')) {
+        localStorage.setItem('visitorsData', JSON.stringify([]));
     }
     
     // تحميل الشعار إذا كان موجوداً
