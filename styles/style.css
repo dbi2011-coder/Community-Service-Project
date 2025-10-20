@@ -440,6 +440,43 @@ tr:hover {
     font-size: 16px;
 }
 
+/* تنسيقات قسم ملف مع ملاحظة */
+.file-note-group {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.file-note {
+    background: #e8f5e8;
+    padding: 10px;
+    border-radius: 5px;
+    border-right: 3px solid #27ae60;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+.note-section {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-right: 4px solid #667eea;
+}
+
+.note-section h4 {
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-size: 1.1em;
+}
+
+.note-text {
+    color: #555;
+    line-height: 1.5;
+    margin: 0;
+}
+
 /* تنسيقات لوحة التحكم */
 .stats-cards {
     display: grid;
