@@ -1,3 +1,4 @@
+/* أنماط عامة */
 * {
     margin: 0;
     padding: 0;
@@ -5,10 +6,10 @@
 }
 
 body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
 }
 
@@ -16,367 +17,346 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
+/* الهيدر */
 header {
-    text-align: center;
-    margin-bottom: 40px;
     background: rgba(255, 255, 255, 0.95);
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 30px;
     backdrop-filter: blur(10px);
+}
+
+.logo {
+    margin-bottom: 20px;
 }
 
 .logo img {
-    max-width: 150px;
+    max-width: 120px;
     height: auto;
-    margin-bottom: 15px;
+    border-radius: 10px;
 }
 
-h1 {
+header h1 {
     color: #2c3e50;
-    margin: 15px 0;
+    margin-bottom: 15px;
     font-size: 2.2em;
+    font-weight: 700;
 }
 
 .credits {
-    margin-top: 20px;
+    background: #f8f9fa;
     padding: 15px;
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: white;
-    border-radius: 10px;
-    display: inline-block;
+    border-radius: 8px;
+    margin-top: 15px;
 }
 
 .credits h3 {
+    color: #e74c3c;
     margin: 8px 0;
-    font-size: 1.3em;
 }
 
-.credits p {
-    margin: 5px 0;
-    font-size: 1.1em;
-}
-
+/* المحتوى الرئيسي */
 .main-content {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    backdrop-filter: blur(10px);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
 
 .project-description {
-    text-align: center;
-    margin-bottom: 40px;
+    background: rgba(255, 255, 255, 0.95);
     padding: 25px;
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    color: white;
-    border-radius: 10px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
 
 .project-description h2 {
+    color: #2c3e50;
     font-size: 1.8em;
-    margin-bottom: 10px;
 }
 
-.project-description p {
-    font-size: 1.2em;
-    opacity: 0.9;
-}
-
+/* خيارات الدخول */
 .login-options {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 25px;
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
 .option-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 50px 30px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px 30px;
     border-radius: 15px;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
 }
 
 .option-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    border-color: #667eea;
 }
 
 .option-card h2 {
+    color: #2c3e50;
     margin-bottom: 15px;
-    font-size: 28px;
+    font-size: 1.5em;
 }
 
 .option-card p {
-    font-size: 18px;
-    opacity: 0.9;
+    color: #7f8c8d;
+    font-size: 1.1em;
 }
 
+/* نماذج الدخول */
 .login-form {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     max-width: 500px;
     margin: 0 auto;
+}
+
+.login-form h2 {
     text-align: center;
-    padding: 30px;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-size: 1.8em;
 }
 
 .form-group {
     margin-bottom: 25px;
-    text-align: right;
 }
 
-label {
+.form-group label {
     display: block;
     margin-bottom: 8px;
-    font-weight: bold;
     color: #2c3e50;
-    font-size: 16px;
+    font-weight: 600;
+    font-size: 1.1em;
 }
 
-input, select, textarea {
+.form-group input,
+.form-group textarea,
+.form-group select {
     width: 100%;
-    padding: 15px;
-    border: 2px solid #ddd;
+    padding: 12px 15px;
+    border: 2px solid #e9ecef;
     border-radius: 8px;
     font-size: 16px;
     transition: all 0.3s ease;
-    background: #f8f9fa;
+    background: #fff;
 }
 
-input:focus, select:focus, textarea:focus {
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     border-color: #667eea;
-    background: white;
-    box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* الأزرار */
 .btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 15px 40px;
+    padding: 14px 30px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 16px;
+    font-weight: 600;
     transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    width: 100%;
+    margin-top: 10px;
 }
 
 .btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-}
-
-.btn:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+    transform: translateY(-2px);
+    box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
 }
 
 .btn.secondary {
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    margin-bottom: 20px;
+    width: auto;
+    margin: 10px 5px;
 }
 
-.hidden {
-    display: none;
+.btn.delete-btn {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    width: auto;
+    padding: 10px 20px;
 }
 
-.content-card {
-    background: #f8f9fa;
-    padding: 35px;
-    border-radius: 12px;
-    border: 2px solid #e9ecef;
-    margin-top: 30px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.agreement-section {
-    margin-top: 35px;
-    padding: 25px;
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    color: white;
-    border-radius: 8px;
-    border: none;
-}
-
-.checkbox-label {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 20px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.checkbox-label input[type="checkbox"] {
-    width: 22px;
-    margin-top: 3px;
-}
-
+/* لوحة التحكم */
 .admin-panel {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
 }
 
-.upload-section, .students-list-section {
+.upload-section {
+    margin-bottom: 30px;
+}
+
+.upload-section h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 10px;
+}
+
+/* قائمة الملفات */
+.files-list-section {
+    margin-top: 30px;
+}
+
+.files-list-section h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 10px;
+}
+
+.files-list {
+    display: grid;
+    gap: 15px;
+}
+
+.file-item {
     background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 5px solid #667eea;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.file-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.file-info h4 {
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-size: 1.2em;
+}
+
+.file-info p {
+    color: #7f8c8d;
+    margin: 3px 0;
+}
+
+.no-files {
+    text-align: center;
+    color: #7f8c8d;
+    font-style: italic;
+    padding: 40px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+/* قائمة المطلعين */
+.students-list-section {
+    background: rgba(255, 255, 255, 0.95);
     padding: 30px;
-    border-radius: 12px;
-    border: 1px solid #ddd;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.students-list-section h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 10px;
+    display: inline-block;
 }
 
 .table-container {
     overflow-x: auto;
     margin-top: 20px;
-    border-radius: 8px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
-    border-radius: 8px;
+    background: #fff;
+    border-radius: 10px;
     overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 th, td {
     padding: 15px;
     text-align: right;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e9ecef;
 }
 
 th {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    font-weight: bold;
-    font-size: 16px;
+    font-weight: 600;
 }
 
 tr:hover {
     background: #f8f9fa;
 }
 
-.content-preview {
-    background: white;
-    padding: 25px;
-    border-radius: 8px;
-    border: 2px solid #e0e0e0;
-    margin: 25px 0;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+/* محتوى الطلاب */
+.content-card {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-.file-link {
-    display: inline-block;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 12px 25px;
-    border-radius: 6px;
-    text-decoration: none;
-    margin: 10px 0;
-    font-weight: bold;
-    transition: all 0.3s ease;
-}
-
-.file-link:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-/* تنسيقات جديدة للملفات المتعددة */
-.files-list-section {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 10px;
-    margin-top: 20px;
-}
-
-.files-list {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.file-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    background: white;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #e0e0e0;
-    transition: all 0.3s ease;
-}
-
-.file-item:hover {
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
-}
-
-.file-info h4 {
-    margin: 0 0 5px 0;
+.content-card h2 {
     color: #2c3e50;
-    font-size: 1.1em;
-}
-
-.file-info p {
-    margin: 2px 0;
-    color: #666;
-    font-size: 0.9em;
-}
-
-.delete-btn {
-    background: #e74c3c;
-    padding: 8px 15px;
-    font-size: 14px;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.delete-btn:hover {
-    background: #c0392b;
-    transform: translateY(-2px);
-}
-
-.no-files {
+    margin-bottom: 25px;
     text-align: center;
-    color: #666;
-    padding: 20px;
-    font-style: italic;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 10px;
 }
 
 .student-file-item {
-    background: white;
+    background: #f8f9fa;
+    padding: 25px;
     border-radius: 10px;
-    padding: 20px;
     margin-bottom: 20px;
-    border: 2px solid #e0e0e0;
+    border-left: 5px solid #667eea;
     transition: all 0.3s ease;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
 .student-file-item:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .student-file-item.viewed {
-    border-color: #27ae60;
-    background: #f8fff9;
+    border-left-color: #27ae60;
+    background: #f0fff4;
 }
 
 .file-header {
@@ -384,234 +364,236 @@ tr:hover {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
 }
 
 .file-header h3 {
-    margin: 0;
     color: #2c3e50;
-    font-size: 1.2em;
+    font-size: 1.3em;
 }
 
 .status {
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 0.8em;
-    font-weight: bold;
-    text-align: center;
-    min-width: 120px;
-}
-
-.student-file-item:not(.viewed) .status {
-    background: #f39c12;
+    background: #e74c3c;
     color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 600;
 }
 
 .student-file-item.viewed .status {
     background: #27ae60;
-    color: white;
 }
 
 .file-content {
-    margin: 15px 0;
+    margin-bottom: 20px;
+}
+
+.content-preview {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.file-link {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.file-link:hover {
+    background: #5a6fd8;
+    transform: translateY(-2px);
 }
 
 .file-actions {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+}
+
+.view-btn {
+    width: auto !important;
+    padding: 12px 25px !important;
+}
+
+.view-btn:disabled {
+    background: #bdc3c7 !important;
+    cursor: not-allowed;
+    transform: none !important;
 }
 
 .viewed-message {
     color: #27ae60;
-    font-weight: bold;
-    margin: 0;
+    font-weight: 600;
     text-align: center;
-    padding: 10px;
-    background: #e8f5e8;
-    border-radius: 5px;
+    padding: 15px;
+    background: #d5f4e6;
+    border-radius: 8px;
 }
 
-.view-btn {
-    margin-top: 10px;
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-}
-
-/* تنسيقات لوحة التحكم */
-.stats-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin: 30px 0;
-}
-
-.stat-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 25px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-.stat-number {
-    font-size: 2.5em;
-    font-weight: bold;
+/* أنماط التقييم بالنجوم */
+.stars {
+    direction: ltr;
     margin: 10px 0;
+    text-align: center;
 }
 
-.dashboard-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 30px;
-}
-
-.dashboard-card {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    border: 2px solid #e0e0e0;
+.star {
+    font-size: 28px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    color: #ccc;
+    transition: color 0.2s;
+    margin: 0 3px;
+    display: inline-block;
 }
 
-.dashboard-card:hover {
-    transform: translateY(-5px);
-    border-color: #667eea;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+.star:hover,
+.star.active {
+    color: #ffc107;
+    transform: scale(1.1);
 }
 
-.dashboard-card h2 {
-    color: #2c3e50;
-    margin-bottom: 10px;
-    font-size: 1.4em;
-}
-
-.dashboard-card p {
-    color: #666;
+.rating-labels {
+    display: flex;
+    justify-content: space-between;
     margin-bottom: 15px;
+    font-size: 12px;
+    color: #666;
+    max-width: 400px;
+    margin: 10px auto;
 }
 
-.card-arrow {
-    position: absolute;
-    top: 30px;
-    left: 30px;
-    font-size: 1.5em;
-    color: #667eea;
-    transition: transform 0.3s ease;
-}
-
-.dashboard-card:hover .card-arrow {
-    transform: translateX(-5px);
-}
-
-.reports-container {
+.rating-input {
+    margin: 20px 0;
+    padding: 20px;
     background: #f8f9fa;
-    padding: 30px;
-    border-radius: 12px;
-    margin-top: 30px;
-    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    text-align: center;
 }
 
-.reports-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
+.rating-input label {
+    display: block;
+    margin-bottom: 15px;
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+.rating-display {
+    color: #e67e22;
+    font-weight: bold;
+    margin: 8px 0;
+    font-size: 1.1em;
+}
+
+.feedback-display {
+    background: #e9ecef;
+    padding: 12px;
+    border-radius: 6px;
+    margin: 10px 0;
+    border-right: 3px solid #3498db;
+}
+
+.rating-section {
     margin-top: 20px;
 }
 
-.report-card {
-    background: white;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-}
-
-.recent-list, .stats-list {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.recent-item, .stat-item {
+.rating-input textarea {
+    width: 100%;
+    max-width: 400px;
+    margin: 15px auto;
+    display: block;
     padding: 12px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    resize: vertical;
+    font-family: inherit;
 }
 
-.recent-item:last-child, .stat-item:last-child {
-    border-bottom: none;
+.rating-input .btn.secondary {
+    margin-top: 10px;
+    padding: 10px 20px;
 }
 
-.student-name {
-    font-weight: bold;
-    color: #2c3e50;
+/* تحسينات للعناصر المخفية */
+.hidden {
+    display: none !important;
 }
 
-.student-date {
-    color: #666;
-    font-size: 0.9em;
+/* تحسينات للشكل العام */
+.text-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-right: 4px solid #007bff;
+    margin: 10px 0;
+    line-height: 1.6;
+    white-space: pre-wrap;
 }
 
-.stat-value {
-    font-weight: bold;
-    color: #667eea;
+/* رسائل التنبيه */
+.alert {
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+    font-weight: 600;
 }
 
-/* تحسينات للاستجابة */
+.alert.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert.info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* التجاوب مع الشاشات المختلفة */
 @media (max-width: 768px) {
-    .admin-panel {
-        grid-template-columns: 1fr;
-    }
-    
-    .login-options {
-        grid-template-columns: 1fr;
-    }
-    
     .container {
-        padding: 10px;
+        padding: 15px;
     }
     
     header {
         padding: 20px;
     }
     
-    h1 {
+    header h1 {
         font-size: 1.8em;
     }
     
-    .project-description h2 {
-        font-size: 1.4em;
-    }
-    
-    .file-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .file-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .reports-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .stats-cards {
-        grid-template-columns: 1fr;
-    }
-    
-    .dashboard-options {
+    .login-options {
         grid-template-columns: 1fr;
     }
     
@@ -619,190 +601,150 @@ tr:hover {
         padding: 30px 20px;
     }
     
-    .main-content {
+    .login-form {
+        padding: 30px 20px;
+    }
+    
+    .admin-panel,
+    .students-list-section,
+    .content-card {
         padding: 20px;
+    }
+    
+    .file-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .file-item {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .rating-labels {
+        flex-direction: column;
+        gap: 5px;
+        text-align: center;
+    }
+    
+    th, td {
+        padding: 10px 8px;
+        font-size: 14px;
+    }
+    
+    .table-container {
+        font-size: 14px;
     }
 }
 
 @media (max-width: 480px) {
-    .container {
-        padding: 5px;
-    }
-    
-    header {
-        padding: 15px;
-    }
-    
-    h1 {
+    header h1 {
         font-size: 1.5em;
     }
     
-    .credits {
-        padding: 10px;
+    .project-description h2 {
+        font-size: 1.4em;
     }
     
-    .credits h3 {
-        font-size: 1.1em;
+    .option-card h2 {
+        font-size: 1.3em;
     }
     
-    .btn {
-        padding: 12px 25px;
-        font-size: 16px;
-    }
-}
-
-@media print {
-    .btn, .upload-section, .delete-btn, .view-btn {
-        display: none;
+    .login-form h2 {
+        font-size: 1.5em;
     }
     
-    body {
-        background: white;
+    .stars {
+        font-size: 24px;
     }
     
-    .container {
-        box-shadow: none;
-    }
-    
-    .main-content {
-        box-shadow: none;
-        background: white;
-    }
-    
-    .file-item {
-        break-inside: avoid;
-    }
-    
-    .student-file-item {
-        break-inside: avoid;
+    .star {
+        font-size: 24px;
+        margin: 0 2px;
     }
 }
 
-/* تخصيص شريط التمرير */
-.files-list::-webkit-scrollbar {
-    width: 8px;
-}
-
-.files-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-.files-list::-webkit-scrollbar-thumb {
-    background: #667eea;
-    border-radius: 4px;
-}
-
-.files-list::-webkit-scrollbar-thumb:hover {
-    background: #5a6fd8;
-}
-
-.recent-list::-webkit-scrollbar,
-.stats-list::-webkit-scrollbar {
-    width: 6px;
-}
-
-.recent-list::-webkit-scrollbar-track,
-.stats-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-}
-
-.recent-list::-webkit-scrollbar-thumb,
-.stats-list::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 3px;
-}
-
-.recent-list::-webkit-scrollbar-thumb:hover,
-.stats-list::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
-/* رسومات تحميل وتأثيرات */
-.loading {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid #667eea;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+/* تأثيرات إضافية */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .fade-in {
-    animation: fadeIn 0.5s ease-in;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+/* شريط التقدم */
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    margin: 15px 0;
+    overflow: hidden;
 }
 
-/* تحسينات للنماذج */
-.form-group {
-    position: relative;
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 3px;
 }
 
-.form-group .required::after {
-    content: " *";
-    color: #e74c3c;
+/* تخصيص شريط التمرير */
+::-webkit-scrollbar {
+    width: 8px;
 }
 
-/* تحسينات للأزرار */
-.btn-group {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
 }
 
-.btn-group .btn {
-    flex: 1;
-    min-width: 120px;
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
 }
 
-/* تحسينات للجداول */
-.table-responsive {
-    overflow-x: auto;
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
 }
 
-.table-striped tbody tr:nth-child(odd) {
-    background-color: #f8f9fa;
-}
-
-/* رسائل التنبيه */
-.alert {
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    border: 1px solid transparent;
-}
-
-.alert-success {
-    color: #155724;
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-}
-
-.alert-error {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-}
-
-.alert-warning {
-    color: #856404;
-    background-color: #fff3cd;
-    border-color: #ffeaa7;
-}
-
-.alert-info {
-    color: #0c5460;
-    background-color: #d1ecf1;
-    border-color: #bee5eb;
+/* تحسينات للطباعة */
+@media print {
+    .btn,
+    .login-options,
+    .login-form,
+    .option-card {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    
+    .container {
+        max-width: none !important;
+        padding: 0 !important;
+    }
+    
+    header,
+    .admin-panel,
+    .students-list-section,
+    .content-card {
+        box-shadow: none !important;
+        background: white !important;
+        margin: 0 !important;
+        padding: 20px !important;
+    }
 }
