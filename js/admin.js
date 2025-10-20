@@ -8,7 +8,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 localStorage.setItem('adminLoggedIn', 'false');
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🎯 بدء تحميل لوحة المسؤول');
+    console.log('🎯 بدء تحميل لوحة مشرف البرنامج');
     
     const adminLoginSection = document.getElementById('adminLoginSection');
     const adminPanel = document.getElementById('adminPanel');
@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const linkInput = document.getElementById('linkInput');
     const fileInput = document.getElementById('fileInput');
     const textInput = document.getElementById('textInput');
+    const fileWithTextInput = document.getElementById('fileWithTextInput');
     const uploadForm = document.getElementById('uploadForm');
     const filesList = document.getElementById('filesList');
     const studentsTableBody = document.getElementById('studentsTableBody');
@@ -34,8 +35,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // بيانات الدخول
     const ADMIN_CREDENTIALS = {
-        username: "admin",
-        password: "admin123"
+        username: "عمرو بن العاص",
+        password: "10243"
     };
 
     // التعامل مع تسجيل الدخول
@@ -63,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
         linkInput.classList.add('hidden');
         fileInput.classList.add('hidden');
         textInput.classList.add('hidden');
+        fileWithTextInput.classList.add('hidden');
         
         switch(this.value) {
             case 'link':
@@ -73,6 +75,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
             case 'text':
                 textInput.classList.remove('hidden');
+                break;
+            case 'file_with_text':
+                fileWithTextInput.classList.remove('hidden');
                 break;
         }
     });
@@ -98,6 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             let contentValue = '';
+            let additionalData = {};
             
             if (type === 'file') {
                 const fileInput = document.getElementById('contentFile');
@@ -152,19 +158,68 @@ document.addEventListener('DOMContentLoaded', function() {
                     alert('يرجى إدخال النص');
                     return;
                 }
+            } else if (type === 'file_with_text') {
+                const fileInput = document.getElementById('contentFileWithText');
+                const file = fileInput.files[0];
+                const textContent = document.getElementById('contentTextWithFile').value.trim();
+                
+                if (!file && !textContent) {
+                    alert('يرجى إدخال ملف أو نص على الأقل');
+                    return;
+                }
+                
+                if (file) {
+                    // التحقق من حجم الملف (5 MB كحد أقصى)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('حجم الملف كبير جداً. الحد الأقصى 5 MB');
+                        return;
+                    }
+                    
+                    // اسم فريد للملف
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `file_${Date.now()}.${fileExt}`;
+                    
+                    console.log('بدء رفع الملف:', fileName);
+                    
+                    // رفع الملف إلى Storage
+                    const { data: uploadData, error: uploadError } = await supabaseClient
+                        .storage
+                        .from('course-files')
+                        .upload(fileName, file);
+                    
+                    if (uploadError) {
+                        console.error('خطأ في رفع الملف:', uploadError);
+                        throw new Error(`فشل رفع الملف: ${uploadError.message}`);
+                    }
+                    
+                    // الحصول على الرابط العام
+                    const { data: urlData } = supabaseClient
+                        .storage
+                        .from('course-files')
+                        .getPublicUrl(fileName);
+                    
+                    contentValue = urlData.publicUrl;
+                }
+                
+                additionalData = {
+                    text_content: textContent,
+                    has_file: !!file,
+                    has_text: !!textContent
+                };
             }
             
             // إضافة المحتوى إلى قاعدة البيانات
             console.log('إضافة إلى قاعدة البيانات...');
+            const contentData = {
+                type: type,
+                title: title,
+                content: contentValue,
+                ...additionalData
+            };
+
             const { data, error } = await supabaseClient
                 .from('contents')
-                .insert([
-                    {
-                        type: type,
-                        title: title,
-                        content: contentValue
-                    }
-                ])
+                .insert([contentData])
                 .select();
             
             if (error) {
@@ -235,11 +290,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 const fileElement = document.createElement('div');
                 fileElement.className = 'file-item';
                 
+                let additionalInfo = '';
+                if (content.type === 'file_with_text') {
+                    additionalInfo = `
+                        <p><strong>نوع:</strong> ملف مع نص</p>
+                        ${content.has_file ? '<p>✓ يحتوي على ملف</p>' : ''}
+                        ${content.has_text ? '<p>✓ يحتوي على نص</p>' : ''}
+                    `;
+                }
+                
                 fileElement.innerHTML = `
                     <div class="file-info">
                         <h4>${content.title}</h4>
                         <p>نوع: ${getContentTypeText(content.type)}</p>
                         <p>تاريخ الإضافة: ${new Date(content.created_at).toLocaleString('ar-SA')}</p>
+                        ${additionalInfo}
                     </div>
                     <button class="btn delete-btn" onclick="deleteContent(${content.id})">حذف</button>
                 `;
@@ -263,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (fetchError) throw fetchError;
                 
                 // إذا كان ملفاً، حذفه من الـ Storage أيضاً
-                if (contentData.type === 'file') {
+                if (contentData.type === 'file' || (contentData.type === 'file_with_text' && contentData.has_file)) {
                     const fileUrl = contentData.content;
                     const fileName = fileUrl.split('/').pop();
                     
@@ -308,7 +373,7 @@ document.addEventListener('DOMContentLoaded', function() {
             studentsTableBody.innerHTML = '';
             
             if (studentsLog.length === 0) {
-                studentsTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">لا توجد بيانات</td></tr>';
+                studentsTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">لا توجد بيانات</td></tr>';
                 return;
             }
             
@@ -316,7 +381,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${log.student_name}</td>
+                    <td>${log.student_id || ''}</td>
+                    <td>${log.student_phone || ''}</td>
                     <td>${log.content_title}</td>
+                    <td>${getRatingStars(log.rating)}</td>
                     <td>${log.view_date}</td>
                     <td>${log.view_time}</td>
                 `;
@@ -327,11 +395,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function getRatingStars(rating) {
+        if (!rating) return 'لم يتم التقييم';
+        const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+        return stars;
+    }
+
     function getContentTypeText(type) {
         const types = {
             'link': 'رابط',
             'file': 'ملف',
-            'text': 'نص'
+            'text': 'نص',
+            'file_with_text': 'ملف مع نص'
         };
         return types[type] || type;
     }
@@ -339,5 +414,5 @@ document.addEventListener('DOMContentLoaded', function() {
     window.deleteContent = deleteContent;
     setInterval(loadStudentsList, 10000);
     
-    console.log('✅ تم تحميل لوحة المسؤول بنجاح');
+    console.log('✅ تم تحميل لوحة مشرف البرنامج بنجاح');
 });
