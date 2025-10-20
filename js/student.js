@@ -1,27 +1,65 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const loginForm = document.getElementById('studentLoginForm');
+    const loginForm = document.getElementById('visitorLoginForm');
     const contentSection = document.getElementById('contentSection');
     const filesContainer = document.getElementById('filesContainer');
+    const displayVisitorName = document.getElementById('displayVisitorName');
+    const displayVisitorId = document.getElementById('displayVisitorId');
+    const displayVisitorPhone = document.getElementById('displayVisitorPhone');
+    const loginTime = document.getElementById('loginTime');
     
-    let currentStudent = '';
+    let currentVisitor = {
+        name: '',
+        id: '',
+        phone: ''
+    };
     
     // التعامل مع تسجيل الدخول
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        const studentName = document.getElementById('studentName').value.trim();
+        const visitorName = document.getElementById('visitorName').value.trim();
+        const visitorId = document.getElementById('visitorId').value.trim();
+        const visitorPhone = document.getElementById('visitorPhone').value.trim();
         
-        if (studentName) {
-            currentStudent = studentName;
+        if (visitorName && visitorId && visitorPhone) {
+            // التحقق من صحة رقم الهوية (10 أرقام)
+            if (!isValidId(visitorId)) {
+                alert('يرجى إدخال رقم هوية صحيح (10 أرقام)');
+                return;
+            }
+            
+            // التحقق من صحة رقم الجوال
+            if (!isValidPhone(visitorPhone)) {
+                alert('يرجى إدخال رقم جوال صحيح');
+                return;
+            }
+            
+            currentVisitor = {
+                name: visitorName,
+                id: visitorId,
+                phone: visitorPhone
+            };
+            
+            // حفظ بيانات الزائر
+            saveVisitorData(currentVisitor);
+            
+            // عرض بيانات الزائر
+            displayVisitorName.textContent = currentVisitor.name;
+            displayVisitorId.textContent = currentVisitor.id;
+            displayVisitorPhone.textContent = currentVisitor.phone;
+            loginTime.textContent = new Date().toLocaleString('ar-SA');
+            
             loginForm.classList.add('hidden');
             contentSection.classList.remove('hidden');
-            loadStudentContents();
+            loadVisitorContents();
+        } else {
+            alert('يرجى ملء جميع الحقول المطلوبة');
         }
     });
     
     // تحميل محتويات الزائر
-    function loadStudentContents() {
+    function loadVisitorContents() {
         const contents = getContents();
-        const studentLogs = getStudentLogs();
+        const visitorLogs = getVisitorLogs();
         
         filesContainer.innerHTML = '';
         
@@ -31,12 +69,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         contents.forEach(content => {
-            const hasViewed = studentLogs.some(log => 
-                log.studentName === currentStudent && log.contentId === content.id
+            const hasViewed = visitorLogs.some(log => 
+                log.visitorId === currentVisitor.id && log.contentId === content.id
             );
             
             const contentElement = document.createElement('div');
-            contentElement.className = `student-file-item ${hasViewed ? 'viewed' : ''}`;
+            contentElement.className = `visitor-file-item ${hasViewed ? 'viewed' : ''}`;
             contentElement.innerHTML = `
                 <div class="file-header">
                     <h3>${content.title}</h3>
@@ -55,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             تأكيد الاطلاع
                         </button>
                     ` : `
-                        <p class="viewed-message">تم تأكيد الاطلاع في: ${getViewDate(studentLogs, content.id)}</p>
+                        <p class="viewed-message">تم تأكيد الاطلاع في: ${getViewDate(visitorLogs, content.id)}</p>
                     `}
                 </div>
             `;
@@ -120,24 +158,56 @@ document.addEventListener('DOMContentLoaded', function() {
         return JSON.parse(localStorage.getItem('adminContents')) || [];
     }
     
-    function getStudentLogs() {
-        return JSON.parse(localStorage.getItem('studentsLog')) || [];
+    function getVisitorLogs() {
+        return JSON.parse(localStorage.getItem('visitorsLog')) || [];
     }
     
     function getViewDate(logs, contentId) {
         const log = logs.find(log => 
-            log.studentName === currentStudent && log.contentId === contentId
+            log.visitorId === currentVisitor.id && log.contentId === contentId
         );
         return log ? `${log.date} ${log.time}` : '';
     }
     
+    function saveVisitorData(visitor) {
+        const visitorsData = getVisitorsData();
+        // التحقق إذا كان الزائر مسجل مسبقاً
+        const existingVisitor = visitorsData.find(v => v.id === visitor.id);
+        
+        if (!existingVisitor) {
+            visitorsData.push({
+                name: visitor.name,
+                id: visitor.id,
+                phone: visitor.phone,
+                firstLogin: new Date().toLocaleString('ar-SA')
+            });
+            localStorage.setItem('visitorsData', JSON.stringify(visitorsData));
+        }
+    }
+    
+    function getVisitorsData() {
+        return JSON.parse(localStorage.getItem('visitorsData')) || [];
+    }
+    
+    function isValidId(id) {
+        // رقم الهوية يجب أن يكون 10 أرقام
+        return /^\d{10}$/.test(id);
+    }
+    
+    function isValidPhone(phone) {
+        // رقم الجوال يجب أن يبدأ بـ 05 ويتبعه 8 أرقام
+        return /^05\d{8}$/.test(phone);
+    }
+    
     // جعل الدوال متاحة globally
     window.viewContent = function(contentId, contentTitle) {
-        const studentsLog = getStudentLogs();
+        const visitorsLog = getVisitorLogs();
         const now = new Date();
         
-        studentsLog.push({
-            studentName: currentStudent,
+        visitorsLog.push({
+            visitorName: currentVisitor.name,
+            visitorId: currentVisitor.id,
+            visitorPhone: currentVisitor.phone,
             contentId: contentId,
             contentTitle: contentTitle,
             date: now.toLocaleDateString('ar-SA'),
@@ -145,8 +215,8 @@ document.addEventListener('DOMContentLoaded', function() {
             timestamp: now.getTime()
         });
         
-        localStorage.setItem('studentsLog', JSON.stringify(studentsLog));
-        loadStudentContents();
+        localStorage.setItem('visitorsLog', JSON.stringify(visitorsLog));
+        loadVisitorContents();
         alert('تم تسجيل الاطلاع بنجاح!');
     };
 });
