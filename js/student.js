@@ -40,9 +40,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (existingVisitor.name !== visitorName || existingVisitor.phone !== visitorPhone) {
                     // عرض رسالة تنبيه عامة بدون إظهار البيانات المسجلة
                     const alertMessage = `⚠️ تنبيه: رقم الهوية مسجل مسبقًا\n\n❗ يرجى التأكد من صحة الاسم ورقم الجوال\n🔐 في حال النسيان، الرجاء التواصل مع مشرف البرنامج`;
-                    
                     alert(alertMessage);
-                    return; // إيقاف عملية الدخول
+                    return; // إوقاف عملية الدخول
                 }
             }
             
@@ -191,7 +190,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // دالة معدلة: حفظ بيانات الزائر (فقط للزائر الجديد)
     function saveVisitorData(visitor) {
         const visitorsData = getVisitorsData();
-        
         // البحث عن الزائر برقم الهوية
         const existingVisitor = visitorsData.find(v => v.id === visitor.id);
         
@@ -204,7 +202,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 firstLogin: new Date().toLocaleString('ar-SA'),
                 lastLogin: new Date().toLocaleString('ar-SA')
             });
-            
             localStorage.setItem('visitorsData', JSON.stringify(visitorsData));
             alert('تم تسجيل دخولك بنجاح! 🎉');
         } else {
