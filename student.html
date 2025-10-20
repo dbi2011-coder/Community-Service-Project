@@ -22,18 +22,27 @@
         <main class="main-content">
             <div class="login-form">
                 <h2>تسجيل الدخول للزوار</h2>
+                <div class="info-message" style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-right: 4px solid #2196f3;">
+                    <p style="margin: 0; color: #1565c0; font-size: 14px;">
+                        <strong>ملاحظة هامة:</strong><br>
+                        - يجب إدخال البيانات الصحيحة كما تم تسجيلها مسبقاً<br>
+                        - في حالة نسيان البيانات، يرجى التواصل مع مشرف البرنامج
+                    </p>
+                </div>
                 <form id="visitorLoginForm">
                     <div class="form-group">
                         <label for="visitorName">الاسم الكامل:</label>
-                        <input type="text" id="visitorName" required placeholder="أدخل الاسم الكامل">
+                        <input type="text" id="visitorName" required placeholder="أدخل الاسم الكامل كما هو في الهوية">
                     </div>
                     <div class="form-group">
                         <label for="visitorId">رقم الهوية:</label>
-                        <input type="text" id="visitorId" required placeholder="أدخل رقم الهوية">
+                        <input type="text" id="visitorId" required placeholder="10 أرقام فقط" maxlength="10">
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">يجب أن يتكون رقم الهوية من 10 أرقام فقط</small>
                     </div>
                     <div class="form-group">
                         <label for="visitorPhone">رقم الجوال:</label>
-                        <input type="tel" id="visitorPhone" required placeholder="أدخل رقم الجوال">
+                        <input type="tel" id="visitorPhone" required placeholder="05xxxxxxxx" maxlength="10">
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">يجب أن يبدأ رقم الجوال بـ 05 ويتبعه 8 أرقام</small>
                     </div>
                     <button type="submit" class="btn">الدخول</button>
                 </form>
