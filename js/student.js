@@ -1,9 +1,3 @@
-// إعداد Supabase
-const SUPABASE_URL = 'https://ejbxhymjsjwndnntgrco.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqYnhoeW1qc2p3bmRubnRncmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4NDAxNDEsImV4cCI6MjA3NjQxNjE0MX0.EIFm5epEpg8BxJig5HYt-OZpVBtaNFpyNqq9WbbExS4';
-
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('studentLoginForm');
     const contentSection = document.getElementById('contentSection');
@@ -11,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let currentStudent = '';
     
+    // التعامل مع تسجيل الدخول
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         const studentName = document.getElementById('studentName').value.trim();
@@ -23,9 +18,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    async function loadStudentContents() {
-        const contents = await getContents();
-        const studentLogs = await getStudentLogs();
+    // تحميل محتويات الزائر
+    function loadStudentContents() {
+        const contents = getContents();
+        const studentLogs = getStudentLogs();
         
         filesContainer.innerHTML = '';
         
@@ -36,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         contents.forEach(content => {
             const hasViewed = studentLogs.some(log => 
-                log.student_name === currentStudent && log.content_id === content.id
+                log.studentName === currentStudent && log.contentId === content.id
             );
             
             const contentElement = document.createElement('div');
@@ -55,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <input type="checkbox" id="agreement-${content.id}">
                            نعم اطلعت على المحتوى المرفق
                         </label>
-                        <button class="btn view-btn" onclick="viewContent(${content.id}, '${content.title.replace(/'/g, "\\'")}')" disabled>
+                        <button class="btn view-btn" onclick="viewContent('${content.id}', '${content.title}')" disabled>
                             تأكيد الاطلاع
                         </button>
                     ` : `
@@ -65,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             filesContainer.appendChild(contentElement);
             
+            // إضافة event listener للcheckbox
             if (!hasViewed) {
                 const checkbox = document.getElementById(`agreement-${content.id}`);
                 const viewBtn = contentElement.querySelector('.view-btn');
@@ -83,23 +80,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="content-preview">
                         <p>رابط خارجي:</p>
                         <a href="${content.content}" target="_blank" class="file-link" onclick="event.stopPropagation()">
-                            اضغط هنا لفتح الرابط
+                            ${content.title} - اضغط هنا لفتح الرابط
                         </a>
                     </div>`;
             case 'file':
                 return `
                     <div class="content-preview">
                         <p>ملف مرفوع:</p>
-                        <a href="${content.content}" target="_blank" class="file-link" onclick="event.stopPropagation()">
-                            اضغط هنا لتحميل الملف
+                        <a href="${content.content}" download="${content.title}" class="file-link" onclick="event.stopPropagation()">
+                            ${content.title} - اضغط هنا لتحميل الملف
                         </a>
-                        <p style="margin-top: 10px; font-size: 14px; color: #666;">
-                            <strong>ملاحظة:</strong> سيتم فتح نافذة جديدة لتحميل الملف
-                        </p>
                     </div>`;
             case 'text':
                 return `
                     <div class="content-preview">
+                        <h4>${content.title}</h4>
                         <p>${content.content}</p>
                     </div>`;
             default:
@@ -107,65 +102,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    async function getContents() {
-        try {
-            const { data, error } = await supabaseClient
-                .from('contents')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
-            if (error) throw error;
-            return data || [];
-        } catch (error) {
-            console.error('Error fetching contents:', error);
-            return [];
-        }
+    function getContents() {
+        return JSON.parse(localStorage.getItem('adminContents')) || [];
     }
     
-    async function getStudentLogs() {
-        try {
-            const { data, error } = await supabaseClient
-                .from('student_logs')
-                .select('*');
-            
-            if (error) throw error;
-            return data || [];
-        } catch (error) {
-            console.error('Error fetching student logs:', error);
-            return [];
-        }
+    function getStudentLogs() {
+        return JSON.parse(localStorage.getItem('studentsLog')) || [];
     }
     
     function getViewDate(logs, contentId) {
         const log = logs.find(log => 
-            log.student_name === currentStudent && log.content_id === contentId
+            log.studentName === currentStudent && log.contentId === contentId
         );
-        return log ? `${log.view_date} ${log.view_time}` : '';
+        return log ? `${log.date} ${log.time}` : '';
     }
     
-    window.viewContent = async function(contentId, contentTitle) {
-        try {
-            const now = new Date();
-            const { error } = await supabaseClient
-                .from('student_logs')
-                .insert([
-                    {
-                        student_name: currentStudent,
-                        content_id: contentId,
-                        content_title: contentTitle,
-                        view_date: now.toLocaleDateString('ar-SA'),
-                        view_time: now.toLocaleTimeString('ar-SA'),
-                        timestamp: now.getTime()
-                    }
-                ]);
-            
-            if (error) throw error;
-            
-            loadStudentContents();
-            alert('تم تسجيل الاطلاع بنجاح!');
-        } catch (error) {
-            console.error('Error logging view:', error);
-            alert('حدث خطأ في تسجيل الاطلاع');
-        }
+    // جعل الدوال متاحة globally
+    window.viewContent = function(contentId, contentTitle) {
+        const studentsLog = getStudentLogs();
+        const now = new Date();
+        
+        studentsLog.push({
+            studentName: currentStudent,
+            contentId: contentId,
+            contentTitle: contentTitle,
+            date: now.toLocaleDateString('ar-SA'),
+            time: now.toLocaleTimeString('ar-SA'),
+            timestamp: now.getTime()
+        });
+        
+        localStorage.setItem('studentsLog', JSON.stringify(studentsLog));
+        loadStudentContents();
+        alert('تم تسجيل الاطلاع بنجاح!');
     };
 });
