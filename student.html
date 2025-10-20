@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>دخول الزوار - مشروع الخدمة المجتمعية</title>
     <link rel="stylesheet" href="styles/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="container">
@@ -13,15 +12,38 @@
             <div class="logo">
                 <img src="assets/logo.png" alt="شعار المشروع" id="logo-img">
             </div>
-            <h1>مشروع الخدمة المجتمعية</h1>
-            <div class="credits">
-                <p>إعداد وتصميم: أ/ صالح عبد العزيز عبد الله العجلان</p>
-                <p>معلم صعوبات التعلم</p>
-            </div>
+            <h1>دخول الزوار</h1>
         </header>
 
-        <!-- باقي المحتوى يبقى كما هو -->
-        <!-- ... -->
+        <main class="main-content">
+            <div class="login-form">
+                <h2>تسجيل الدخول</h2>
+                <form id="studentLoginForm">
+                    <div class="form-group">
+                        <label for="studentName">الاسم الكامل:</label>
+                        <input type="text" id="studentName" required>
+                    </div>
+                    <button type="submit" class="btn">الدخول</button>
+                </form>
+            </div>
+
+            <!-- سيتم إظهار هذا القسم بعد تسجيل الدخول -->
+            <div id="contentSection" class="hidden">
+                <div class="content-card">
+                    <h2>المحتوى المطلوب الاطلاع عليه</h2>
+                    <div id="adminContent"></div>
+                    <div class="agreement-section">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="agreementCheckbox">
+                            نعم اطلعت على المحتوى المرفق
+                        </label>
+                        <button id="viewContentBtn" class="btn" disabled>فتح المحتوى</button>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
+
+    <script src="js/student.js"></script>
 </body>
 </html>
