@@ -21,11 +21,19 @@
 
         <main class="main-content">
             <div class="login-form">
-                <h2>تسجيل الدخول</h2>
-                <form id="studentLoginForm">
+                <h2>تسجيل الدخول للزوار</h2>
+                <form id="visitorLoginForm">
                     <div class="form-group">
-                        <label for="studentName">الاسم الكامل:</label>
-                        <input type="text" id="studentName" required>
+                        <label for="visitorName">الاسم الكامل:</label>
+                        <input type="text" id="visitorName" required placeholder="أدخل الاسم الكامل">
+                    </div>
+                    <div class="form-group">
+                        <label for="visitorId">رقم الهوية:</label>
+                        <input type="text" id="visitorId" required placeholder="أدخل رقم الهوية">
+                    </div>
+                    <div class="form-group">
+                        <label for="visitorPhone">رقم الجوال:</label>
+                        <input type="tel" id="visitorPhone" required placeholder="أدخل رقم الجوال">
                     </div>
                     <button type="submit" class="btn">الدخول</button>
                 </form>
@@ -33,6 +41,16 @@
 
             <!-- قسم المحتوى (يظهر بعد تسجيل الدخول) -->
             <div id="contentSection" class="hidden">
+                <div class="visitor-info-card">
+                    <h3>معلومات الزائر</h3>
+                    <div class="visitor-details">
+                        <p><strong>الاسم:</strong> <span id="displayVisitorName"></span></p>
+                        <p><strong>رقم الهوية:</strong> <span id="displayVisitorId"></span></p>
+                        <p><strong>رقم الجوال:</strong> <span id="displayVisitorPhone"></span></p>
+                        <p><strong>وقت الدخول:</strong> <span id="loginTime"></span></p>
+                    </div>
+                </div>
+
                 <div class="content-card">
                     <h2>المحتويات المطلوب الاطلاع عليها</h2>
                     <div id="filesContainer">
