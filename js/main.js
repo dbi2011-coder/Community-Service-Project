@@ -6,13 +6,8 @@ function navigateTo(page) {
 // تهيئة التطبيق
 document.addEventListener('DOMContentLoaded', function() {
     // تهيئة البيانات إذا لم تكن موجودة
-    if (!localStorage.getItem('adminContent')) {
-        localStorage.setItem('adminContent', JSON.stringify({
-            type: '',
-            title: '',
-            content: '',
-            date: ''
-        }));
+    if (!localStorage.getItem('adminContents')) {
+        localStorage.setItem('adminContents', JSON.stringify([]));
     }
     
     if (!localStorage.getItem('studentsLog')) {
