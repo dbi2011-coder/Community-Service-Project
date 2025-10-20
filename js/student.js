@@ -21,16 +21,29 @@ document.addEventListener('DOMContentLoaded', function() {
         const visitorPhone = document.getElementById('visitorPhone').value.trim();
         
         if (visitorName && visitorId && visitorPhone) {
-            // التحقق من صحة رقم الهوية (10 أرقام)
+            // التحقق من صحة رقم الهوية (10 أرقام بالضبط)
             if (!isValidId(visitorId)) {
-                alert('يرجى إدخال رقم هوية صحيح (10 أرقام)');
+                alert('يرجى إدخال رقم هوية صحيح (10 أرقام بالضبط)');
                 return;
             }
             
             // التحقق من صحة رقم الجوال
             if (!isValidPhone(visitorPhone)) {
-                alert('يرجى إدخال رقم جوال صحيح');
+                alert('يرجى إدخال رقم جوال صحيح (يبدأ بـ 05 ويتبعه 8 أرقام)');
                 return;
+            }
+            
+            // التحقق إذا كان رقم الهوية مسجل مسبقاً
+            const existingVisitor = getVisitorById(visitorId);
+            if (existingVisitor) {
+                // التحقق إذا كانت البيانات مطابقة للبيانات المسجلة
+                if (existingVisitor.name !== visitorName || existingVisitor.phone !== visitorPhone) {
+                    // عرض رسالة تنبيه مع بيانات الزائر المسجلة مسبقاً
+                    const alertMessage = `⚠️ تنبيه: رقم الهوية مسجل مسبقًا\n\nالبيانات المسجلة:\n📝 الاسم: ${existingVisitor.name}\n📱 رقم الجوال: ${existingVisitor.phone}\n\nالبيانات المدخلة:\n📝 الاسم: ${visitorName}\n📱 رقم الجوال: ${visitorPhone}\n\n❗ يرجى التأكد من صحة الاسم ورقم الجوال\n🔐 في حال النسيان، الرجاء التواصل مع مشرف البرنامج`;
+                    
+                    alert(alertMessage);
+                    return; // إيقاف عملية الدخول
+                }
             }
             
             currentVisitor = {
@@ -39,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 phone: visitorPhone
             };
             
-            // حفظ بيانات الزائر
+            // حفظ بيانات الزائر (فقط إذا كان زائر جديد أو بيانات مطابقة)
             saveVisitorData(currentVisitor);
             
             // عرض بيانات الزائر
@@ -169,19 +182,34 @@ document.addEventListener('DOMContentLoaded', function() {
         return log ? `${log.date} ${log.time}` : '';
     }
     
+    // دالة جديدة: البحث عن زائر برقم الهوية
+    function getVisitorById(visitorId) {
+        const visitorsData = getVisitorsData();
+        return visitorsData.find(v => v.id === visitorId);
+    }
+    
+    // دالة معدلة: حفظ بيانات الزائر (فقط للزائر الجديد)
     function saveVisitorData(visitor) {
         const visitorsData = getVisitorsData();
-        // التحقق إذا كان الزائر مسجل مسبقاً
+        
+        // البحث عن الزائر برقم الهوية
         const existingVisitor = visitorsData.find(v => v.id === visitor.id);
         
         if (!existingVisitor) {
+            // إنشاء زائر جديد فقط إذا لم يكن موجوداً
             visitorsData.push({
                 name: visitor.name,
                 id: visitor.id,
                 phone: visitor.phone,
-                firstLogin: new Date().toLocaleString('ar-SA')
+                firstLogin: new Date().toLocaleString('ar-SA'),
+                lastLogin: new Date().toLocaleString('ar-SA')
             });
+            
             localStorage.setItem('visitorsData', JSON.stringify(visitorsData));
+            alert('تم تسجيل دخولك بنجاح! 🎉');
+        } else {
+            // إذا كان الزائر موجوداً والبيانات مطابقة، نسمح بالدخول فقط
+            alert('تم الدخول بنجاح! ✅');
         }
     }
     
@@ -190,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function isValidId(id) {
-        // رقم الهوية يجب أن يكون 10 أرقام
+        // رقم الهوية يجب أن يكون 10 أرقام بالضبط
         return /^\d{10}$/.test(id);
     }
     
