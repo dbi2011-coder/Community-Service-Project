@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const linkInput = document.getElementById('linkInput');
     const fileInput = document.getElementById('fileInput');
     const textInput = document.getElementById('textInput');
+    const fileWithNoteInput = document.getElementById('fileWithNoteInput');
     const uploadForm = document.getElementById('uploadForm');
     const filesList = document.getElementById('filesList');
     const studentsTableBody = document.getElementById('studentsTableBody');
@@ -40,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
         linkInput.classList.add('hidden');
         fileInput.classList.add('hidden');
         textInput.classList.add('hidden');
+        fileWithNoteInput.classList.add('hidden');
         
         switch(this.value) {
             case 'link':
@@ -51,6 +53,9 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'text':
                 textInput.classList.remove('hidden');
                 break;
+            case 'fileWithNote':
+                fileWithNoteInput.classList.remove('hidden');
+                break;
         }
     });
 
@@ -61,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const type = contentType.value;
         const title = document.getElementById('contentTitle').value.trim();
         let content = '';
+        let note = '';
         
         switch(type) {
             case 'link':
@@ -86,10 +92,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 break;
+            case 'fileWithNote':
+                const fileWithNote = document.getElementById('contentFileWithNote').files[0];
+                note = document.getElementById('contentNote').value.trim();
+                if (fileWithNote) {
+                    content = URL.createObjectURL(fileWithNote);
+                } else {
+                    alert('يرجى اختيار ملف');
+                    return;
+                }
+                if (note.length < 3) {
+                    alert('يرجى إدخال ملاحظة حول الملف');
+                    return;
+                }
+                break;
         }
         
         if (title && content) {
-            addNewContent(type, title, content);
+            addNewContent(type, title, content, note);
             uploadForm.reset();
         } else {
             alert('يرجى ملء جميع الحقول المطلوبة');
@@ -115,13 +135,14 @@ document.addEventListener('DOMContentLoaded', function() {
         loadStudentsList();
     }
 
-    function addNewContent(type, title, content) {
+    function addNewContent(type, title, content, note = '') {
         const contents = getContents();
         const newContent = {
             id: Date.now().toString(),
             type: type,
             title: title,
             content: content,
+            note: note,
             date: new Date().toLocaleString('ar-SA')
         };
         
@@ -147,11 +168,18 @@ document.addEventListener('DOMContentLoaded', function() {
         contents.forEach(content => {
             const fileElement = document.createElement('div');
             fileElement.className = 'file-item';
+            
+            let noteHtml = '';
+            if (content.type === 'fileWithNote' && content.note) {
+                noteHtml = `<p class="file-note">ملاحظة: ${content.note}</p>`;
+            }
+            
             fileElement.innerHTML = `
                 <div class="file-info">
                     <h4>${content.title}</h4>
                     <p>نوع: ${getContentTypeText(content.type)}</p>
                     <p>تاريخ الإضافة: ${content.date}</p>
+                    ${noteHtml}
                 </div>
                 <button class="btn delete-btn" onclick="adminDeleteContent('${content.id}')">حذف</button>
             `;
@@ -163,7 +191,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const types = {
             'link': 'رابط',
             'file': 'ملف',
-            'text': 'نص'
+            'text': 'نص',
+            'fileWithNote': 'ملف مع ملاحظة'
         };
         return types[type] || type;
     }
