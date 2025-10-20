@@ -12,7 +12,11 @@
             <div class="logo">
                 <img src="assets/logo.png" alt="شعار المشروع" id="logo-img">
             </div>
-            <h1>دخول الزوار</h1>
+            <h1>برنامج مشروع الخدمة المجتمعية</h1>
+            <div class="credits">
+                <p>إعداد وتصميم: أ/ صالح عبد العزيز عبد الله العجلان</p>
+                <p>معلم صعوبات التعلم</p>
+            </div>
         </header>
 
         <main class="main-content">
@@ -27,17 +31,12 @@
                 </form>
             </div>
 
-            <!-- سيتم إظهار هذا القسم بعد تسجيل الدخول -->
+            <!-- قسم المحتوى (يظهر بعد تسجيل الدخول) -->
             <div id="contentSection" class="hidden">
                 <div class="content-card">
-                    <h2>المحتوى المطلوب الاطلاع عليه</h2>
-                    <div id="adminContent"></div>
-                    <div class="agreement-section">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="agreementCheckbox">
-                            نعم اطلعت على المحتوى المرفق
-                        </label>
-                        <button id="viewContentBtn" class="btn" disabled>فتح المحتوى</button>
+                    <h2>المحتويات المطلوب الاطلاع عليها</h2>
+                    <div id="filesContainer">
+                        <!-- سيتم ملؤها بالملفات -->
                     </div>
                 </div>
             </div>
