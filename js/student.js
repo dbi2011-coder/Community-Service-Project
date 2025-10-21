@@ -1,3 +1,83 @@
+// دالة للتحقق من صحة رقم الهوية
+function isValidId(id) {
+    return /^\d{10}$/.test(id);
+}
+
+// دالة للتحقق من صحة رقم الجوال
+function isValidPhone(phone) {
+    return /^05\d{8}$/.test(phone);
+}
+
+// دالة للحصول على المحتويات
+function getContents() {
+    return JSON.parse(localStorage.getItem('adminContents')) || [];
+}
+
+// دالة للحصول على سجلات الطلاب
+function getStudentLogs() {
+    return JSON.parse(localStorage.getItem('studentsLog')) || [];
+}
+
+// دالة للحصول على بيانات الطلاب
+function getStudentsData() {
+    return JSON.parse(localStorage.getItem('studentsData')) || [];
+}
+
+// دالة للبحث عن طالب برقم الهوية
+function getStudentById(studentId) {
+    const studentsData = getStudentsData();
+    return studentsData.find(s => s.id === studentId);
+}
+
+// دالة لحفظ بيانات الطالب
+function saveStudentData(student) {
+    const studentsData = getStudentsData();
+    const existingStudent = studentsData.find(s => s.id === student.id);
+    
+    if (!existingStudent) {
+        studentsData.push({
+            name: student.name,
+            id: student.id,
+            phone: student.phone,
+            firstLogin: new Date().toLocaleString('ar-SA'),
+            lastLogin: new Date().toLocaleString('ar-SA')
+        });
+        localStorage.setItem('studentsData', JSON.stringify(studentsData));
+        return 'new';
+    } else {
+        return 'existing';
+    }
+}
+
+// دالة لتسجيل الاطلاع على المحتوى
+function studentViewContent(contentId, contentTitle) {
+    const studentsLog = getStudentLogs();
+    const now = new Date();
+    
+    studentsLog.push({
+        studentName: currentStudent.name,
+        studentId: currentStudent.id,
+        studentPhone: currentStudent.phone,
+        contentId: contentId,
+        contentTitle: contentTitle,
+        date: now.toLocaleDateString('ar-SA'),
+        time: now.toLocaleTimeString('ar-SA'),
+        timestamp: now.getTime()
+    });
+    
+    localStorage.setItem('studentsLog', JSON.stringify(studentsLog));
+    loadStudentContents();
+    alert('تم تسجيل الاطلاع بنجاح!');
+}
+
+// المتغير العالمي للطالب الحالي
+let currentStudent = {
+    name: '',
+    id: '',
+    phone: ''
+};
+
+// الكود الرئيسي
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('studentLoginForm');
     const contentSection = document.getElementById('contentSection');
@@ -7,12 +87,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const displayStudentPhone = document.getElementById('displayStudentPhone');
     const loginTime = document.getElementById('loginTime');
     
-    let currentStudent = {
-        name: '',
-        id: '',
-        phone: ''
-    };
-    
     // التعامل مع تسجيل الدخول
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -21,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const studentPhone = document.getElementById('studentPhone').value.trim();
         
         if (studentName && studentId && studentPhone) {
-            // التحقق من صحة رقم الهوية (10 أرقام بالضبط)
+            // التحقق من صحة رقم الهوية
             if (!isValidId(studentId)) {
                 alert('يرجى إدخال رقم هوية صحيح (10 أرقام بالضبط)');
                 return;
@@ -51,7 +125,12 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             
             // حفظ بيانات الطالب
-            saveStudentData(currentStudent);
+            const saveResult = saveStudentData(currentStudent);
+            if (saveResult === 'new') {
+                alert('تم تسجيل دخولك بنجاح! 🎉');
+            } else {
+                alert('تم الدخول بنجاح! ✅');
+            }
             
             // عرض بيانات الطالب
             displayStudentName.textContent = currentStudent.name;
@@ -165,75 +244,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function getContents() {
-        return JSON.parse(localStorage.getItem('adminContents')) || [];
-    }
-    
-    function getStudentLogs() {
-        return JSON.parse(localStorage.getItem('studentsLog')) || [];
-    }
-    
     function getViewDate(logs, contentId) {
         const log = logs.find(log => 
             log.studentId === currentStudent.id && log.contentId === contentId
         );
         return log ? `${log.date} ${log.time}` : '';
     }
-    
-    function getStudentById(studentId) {
-        const studentsData = getStudentsData();
-        return studentsData.find(s => s.id === studentId);
-    }
-    
-    function saveStudentData(student) {
-        const studentsData = getStudentsData();
-        const existingStudent = studentsData.find(s => s.id === student.id);
-        
-        if (!existingStudent) {
-            studentsData.push({
-                name: student.name,
-                id: student.id,
-                phone: student.phone,
-                firstLogin: new Date().toLocaleString('ar-SA'),
-                lastLogin: new Date().toLocaleString('ar-SA')
-            });
-            localStorage.setItem('studentsData', JSON.stringify(studentsData));
-            alert('تم تسجيل دخولك بنجاح! 🎉');
-        } else {
-            alert('تم الدخول بنجاح! ✅');
-        }
-    }
-    
-    function getStudentsData() {
-        return JSON.parse(localStorage.getItem('studentsData')) || [];
-    }
-    
-    function isValidId(id) {
-        return /^\d{10}$/.test(id);
-    }
-    
-    function isValidPhone(phone) {
-        return /^05\d{8}$/.test(phone);
-    }
-    
-    // جعل الدوال متاحة globally
-    window.studentViewContent = function(contentId, contentTitle) {
-        const studentsLog = getStudentLogs();
-        const now = new Date();
-        
-        studentsLog.push({
-            studentName: currentStudent.name,
-            studentId: currentStudent.id,
-            studentPhone: currentStudent.phone,
-            contentId: contentId,
-            contentTitle: contentTitle,
-            date: now.toLocaleDateString('ar-SA'),
-            time: now.toLocaleTimeString('ar-SA'),
-            timestamp: now.getTime()
-        });
-        
-        localStorage.setItem('studentsLog', JSON.stringify(studentsLog));
-        loadStudentContents();
-        alert('تم تسجيل الاطلاع بنجاح!');
-    };
 });
