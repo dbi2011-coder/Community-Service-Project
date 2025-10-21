@@ -188,6 +188,12 @@ function addRatingSystem(contentElement, contentId, hasViewed) {
     
     contentElement.querySelector('.file-actions').appendChild(ratingSection);
     
+    // إضافة event listeners للنجوم
+    const stars = ratingSection.querySelectorAll('.star');
+    const ratingLabels = ratingSection.querySelectorAll('.rating-label');
+    const ratingFeedback = ratingSection.querySelector('.rating-feedback');
+    const currentRating = ratingSection.querySelector('.current-rating');
+    
     // التحقق إذا كان قد تم التقييم مسبقاً
     const existingRating = getContentRating(contentId);
     if (existingRating) {
@@ -195,69 +201,43 @@ function addRatingSystem(contentElement, contentId, hasViewed) {
         return;
     }
     
-    // إضافة event listeners بشكل صحيح
-    initializeRatingEvents(ratingSection, contentId);
-}
-
-// دالة جديدة لتهيئة أحداث التقييم
-function initializeRatingEvents(ratingSection, contentId) {
-    const stars = ratingSection.querySelectorAll('.star');
-    const ratingLabels = ratingSection.querySelectorAll('.rating-label');
-    const ratingFeedback = ratingSection.querySelector('.rating-feedback');
-    
-    let currentRating = 0;
-    
-    // إضافة event listeners للنجوم
     stars.forEach(star => {
-        star.addEventListener('click', function(e) {
-            e.stopPropagation();
-            currentRating = parseInt(this.getAttribute('data-rating'));
-            setRating(stars, ratingLabels, currentRating);
+        star.addEventListener('click', function() {
+            const rating = parseInt(this.getAttribute('data-rating'));
+            setRating(stars, ratingLabels, rating);
             ratingFeedback.classList.remove('hidden');
         });
         
-        star.addEventListener('mouseover', function(e) {
-            e.stopPropagation();
+        star.addEventListener('mouseover', function() {
             const rating = parseInt(this.getAttribute('data-rating'));
             highlightStars(stars, ratingLabels, rating);
         });
     });
     
-    // إعادة التعيين عند مغادرة منطقة النجوم
-    ratingSection.addEventListener('mouseleave', function(e) {
-        if (currentRating > 0) {
-            highlightStars(stars, ratingLabels, currentRating);
-        } else {
-            resetStars(stars, ratingLabels);
-        }
+    ratingSection.addEventListener('mouseleave', function() {
+        const currentActive = ratingSection.querySelector('.star.active');
+        if (!currentActive) return;
+        const rating = parseInt(currentActive.getAttribute('data-rating'));
+        highlightStars(stars, ratingLabels, rating);
     });
     
     // زر تسجيل التقييم
     const submitBtn = ratingSection.querySelector('.submit-rating');
-    submitBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        
-        if (currentRating === 0) {
+    submitBtn.addEventListener('click', function() {
+        const contentId = this.getAttribute('data-content-id');
+        const activeStar = ratingSection.querySelector('.star.active');
+        if (!activeStar) {
             alert('يرجى اختيار تقييم أولاً');
             return;
         }
         
+        const rating = parseInt(activeStar.getAttribute('data-rating'));
         const note = document.getElementById(`ratingNote-${contentId}`).value.trim();
-        saveContentRating(contentId, currentRating, note);
-        showCurrentRating(ratingSection, { rating: currentRating, note });
+        
+        saveContentRating(contentId, rating, note);
+        showCurrentRating(ratingSection, { rating, note });
         
         alert('شكراً لك! تم تسجيل تقييمك بنجاح 🌟');
-    });
-}
-
-// دالة جديدة لإعادة تعيين النجوم
-function resetStars(stars, labels) {
-    stars.forEach(star => {
-        star.classList.remove('hover');
-    });
-    
-    labels.forEach(label => {
-        label.classList.remove('hover');
     });
 }
 
@@ -267,10 +247,8 @@ function setRating(stars, labels, rating) {
         const starRating = parseInt(star.getAttribute('data-rating'));
         if (starRating <= rating) {
             star.classList.add('active');
-            star.classList.remove('hover');
         } else {
             star.classList.remove('active');
-            star.classList.remove('hover');
         }
     });
     
@@ -278,10 +256,8 @@ function setRating(stars, labels, rating) {
         const labelRating = parseInt(label.getAttribute('data-rating'));
         if (labelRating === rating) {
             label.classList.add('active');
-            label.classList.remove('hover');
         } else {
             label.classList.remove('active');
-            label.classList.remove('hover');
         }
     });
 }
@@ -377,8 +353,6 @@ function saveContentRating(contentId, rating, note) {
 
 // الكود الرئيسي
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('تم تحميل صفحة الزوار'); // للت debugging
-    
     const loginForm = document.getElementById('studentLoginForm');
     const contentSection = document.getElementById('contentSection');
     const filesContainer = document.getElementById('filesContainer');
@@ -387,18 +361,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const displayStudentPhone = document.getElementById('displayStudentPhone');
     const loginTime = document.getElementById('loginTime');
     
-    // التحقق من وجود العناصر
-    if (!loginForm) {
-        console.error('لم يتم العثور على نموذج الدخول');
-        return;
-    }
-    
-    console.log('جميع العناصر جاهزة');
-    
     // تعريف الدالة globally
     window.loadStudentContents = function() {
-        console.log('تحميل محتويات الطالب...');
-        
         const contents = getContents();
         const studentLogs = getStudentLogs();
         
@@ -465,13 +429,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // التعامل مع تسجيل الدخول
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        console.log('تم الضغط على زر الدخول');
-        
         const studentName = document.getElementById('studentName').value.trim();
         const studentId = document.getElementById('studentId').value.trim();
         const studentPhone = document.getElementById('studentPhone').value.trim();
-        
-        console.log('البيانات المدخلة:', { studentName, studentId, studentPhone });
         
         if (studentName && studentId && studentPhone) {
             // التحقق من صحة رقم الهوية
@@ -503,8 +463,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 phone: studentPhone
             };
             
-            console.log('الطالب الحالي:', window.currentStudent);
-            
             // حفظ بيانات الطالب
             const saveResult = saveStudentData(window.currentStudent);
             if (saveResult === 'new') {
@@ -526,6 +484,4 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('يرجى ملء جميع الحقول المطلوبة');
         }
     });
-    
-    console.log('تم تهيئة صفحة الزوار بنجاح');
 });
