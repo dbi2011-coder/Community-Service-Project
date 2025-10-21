@@ -1,55 +1,192 @@
-<!-- في قسم إدارة الطلاب - تغيير العنوان -->
-<div class="students-management-section">
-    <h2>إدارة الزوار</h2>
-    
-    <!-- قسم البحث والتصفية -->
-    <div class="search-section">
-        <div class="form-group">
-            <label for="searchVisitor">بحث عن زائر:</label>
-            <input type="text" id="searchVisitor" placeholder="ابحث بالاسم أو رقم الهوية...">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة المشرف - مشروع الخدمة المجتمعية</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="assets/logo.png" alt="شعار المشروع" id="logo-img" onerror="this.style.display='none'">
+            </div>
+            <h1>لوحة تحكم المشرف</h1>
+            <div class="credits">
+                <p>إعداد وتصميم: أ/ صالح عبد العزيز عبد الله العجلان</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- قسم تسجيل الدخول -->
+            <div id="adminLoginSection">
+                <div class="login-form">
+                    <h2>تسجيل دخول مشرف البرنامج</h2>
+                    <form id="adminLoginForm">
+                        <div class="form-group">
+                            <label for="adminUsername">اسم المستخدم:</label>
+                            <input type="text" id="adminUsername" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminPassword">كلمة المرور:</label>
+                            <input type="password" id="adminPassword" required>
+                        </div>
+                        <button type="submit" class="btn">دخول</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- لوحة التحكم (تظهر بعد تسجيل الدخول) -->
+            <div id="adminPanel" class="hidden">
+                <div class="admin-panel">
+                    <div class="upload-section">
+                        <h2>إدارة المحتوى</h2>
+                        <form id="uploadForm">
+                            <div class="form-group">
+                                <label>نوع المحتوى:</label>
+                                <select id="contentType">
+                                    <option value="link">رابط</option>
+                                    <option value="file">ملف</option>
+                                    <option value="text">نص</option>
+                                    <option value="fileWithNote">ملف مع ملاحظة</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" id="linkInput">
+                                <label for="contentLink">رابط المحتوى:</label>
+                                <input type="url" id="contentLink" placeholder="https://example.com">
+                            </div>
+                            
+                            <div class="form-group hidden" id="fileInput">
+                                <label for="contentFile">رفع ملف:</label>
+                                <input type="file" id="contentFile">
+                            </div>
+                            
+                            <div class="form-group hidden" id="textInput">
+                                <label for="contentText">النص:</label>
+                                <textarea id="contentText" rows="5" placeholder="أدخل النص هنا..."></textarea>
+                            </div>
+
+                            <div class="form-group hidden" id="fileWithNoteInput">
+                                <div class="file-note-group">
+                                    <div class="form-group">
+                                        <label for="contentFileWithNote">رفع ملف:</label>
+                                        <input type="file" id="contentFileWithNote">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="contentNote">ملاحظة:</label>
+                                        <textarea id="contentNote" rows="3" placeholder="أدخل ملاحظة حول الملف..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="contentTitle">عنوان المحتوى:</label>
+                                <input type="text" id="contentTitle" required>
+                            </div>
+                            
+                            <button type="submit" class="btn">إضافة المحتوى</button>
+                        </form>
+                    </div>
+
+                    <div class="files-list-section">
+                        <h2>المحتويات المضافة</h2>
+                        <div class="files-list" id="filesList">
+                            <!-- سيتم ملؤها بالملفات -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- قسم إدارة الزوار -->
+                <div class="students-management-section">
+                    <h2>إدارة الزوار</h2>
+                    
+                    <div class="search-section">
+                        <div class="form-group">
+                            <label for="searchStudent">بحث عن زائر:</label>
+                            <input type="text" id="searchStudent" placeholder="ابحث بالاسم أو رقم الهوية...">
+                        </div>
+                    </div>
+
+                    <div class="students-list-section">
+                        <h3>قائمة الزوار المسجلين</h3>
+                        <div class="table-container">
+                            <table id="studentsDataTable">
+                                <thead>
+                                    <tr>
+                                        <th>الاسم</th>
+                                        <th>رقم الهوية</th>
+                                        <th>رقم الجوال</th>
+                                        <th>تاريخ التسجيل</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="studentsDataTableBody">
+                                    <!-- سيتم ملء الجدول dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- قسم سجل المطلعين -->
+                <div class="students-list-section">
+                    <h2>سجل المطلعين</h2>
+                    <button id="printBtn" class="btn secondary">طباعة القائمة</button>
+                    <div class="table-container">
+                        <table id="studentsTable">
+                            <thead>
+                                <tr>
+                                    <th>الاسم</th>
+                                    <th>رقم الهوية</th>
+                                    <th>رقم الجوال</th>
+                                    <th>المحتوى</th>
+                                    <th>التاريخ</th>
+                                    <th>الوقت</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTableBody">
+                                <!-- سيتم ملء الجدول dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- نافذة تعديل بيانات الزائر -->
+    <div id="editStudentModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>تعديل بيانات الزائر</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editStudentForm">
+                    <input type="hidden" id="editStudentOriginalId">
+                    <div class="form-group">
+                        <label for="editStudentName">الاسم الكامل:</label>
+                        <input type="text" id="editStudentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editStudentId">رقم الهوية:</label>
+                        <input type="text" id="editStudentId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editStudentPhone">رقم الجوال:</label>
+                        <input type="tel" id="editStudentPhone" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn">حفظ التعديلات</button>
+                        <button type="button" class="btn secondary" id="cancelEdit">إلغاء</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
-    <div class="students-list-section">
-        <h3>قائمة الزوار المسجلين</h3>
-        <div class="table-container">
-            <table id="visitorsDataTable">
-                <thead>
-                    <tr>
-                        <th>الاسم</th>
-                        <th>رقم الهوية</th>
-                        <th>رقم الجوال</th>
-                        <th>تاريخ التسجيل</th>
-                        <th>الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody id="visitorsDataTableBody">
-                    <!-- سيتم ملء الجدول dynamically -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<!-- في قسم سجل المطلعين - تغيير العنوان -->
-<div class="students-list-section">
-    <h2>سجل المطلعين</h2>
-    <button id="printBtn" class="btn secondary">طباعة القائمة</button>
-    <div class="table-container">
-        <table id="visitorsTable">
-            <thead>
-                <tr>
-                    <th>الاسم</th>
-                    <th>رقم الهوية</th>
-                    <th>رقم الجوال</th>
-                    <th>المحتوى</th>
-                    <th>التاريخ</th>
-                    <th>الوقت</th>
-                </tr>
-            </thead>
-            <tbody id="visitorsTableBody">
-                <!-- سيتم ملء الجدول dynamically -->
-            </tbody>
-        </table>
-    </div>
-</div>
+    <script src="js/admin.js"></script>
+</body>
+</html>
