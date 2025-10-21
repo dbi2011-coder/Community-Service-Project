@@ -341,13 +341,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const studentIndex = studentsData.findIndex(s => s.id === originalId);
         
         if (studentIndex !== -1) {
-            // تحديث بيانات الزائر
             studentsData[studentIndex] = {
                 ...studentsData[studentIndex],
                 ...newData
             };
             
-            // تحديث سجل المطلعين إذا تغير رقم الهوية
             if (originalId !== newData.id) {
                 updateStudentsLog(originalId, newData.id, newData.name, newData.phone);
             }
@@ -379,7 +377,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const filteredStudents = studentsData.filter(student => student.id !== studentId);
             localStorage.setItem('studentsData', JSON.stringify(filteredStudents));
             
-            // حذف سجلات الاطلاع الخاصة بالزائر
             const studentsLog = JSON.parse(localStorage.getItem('studentsLog')) || [];
             const filteredLog = studentsLog.filter(log => log.studentId !== studentId);
             localStorage.setItem('studentsLog', JSON.stringify(filteredLog));
@@ -416,7 +413,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.openEditStudentModal = openEditStudentModal;
     window.deleteStudent = deleteStudent;
     
-    // تحديث القوائم كل 5 ثواني
     setInterval(() => {
         loadStudentsList();
         loadStudentsData();
