@@ -4,7 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مشروع الخدمة المجتمعية</title>
-    <link rel="stylesheet" href="styles/style.css">
+    
+    <!-- إضافة CSS داخلي للتأكد من التحميل -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .logo img {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin: 15px 0;
+            font-size: 2.2em;
+        }
+        
+        .credits {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        .credits h3 {
+            margin: 8px 0;
+            font-size: 1.3em;
+        }
+        
+        .credits p {
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+        
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .project-description {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 25px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .project-description h2 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+        
+        .login-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .option-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 30px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .option-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+        
+        .option-card h2 {
+            margin-bottom: 15px;
+            font-size: 28px;
+        }
+    </style>
+    
+    <!-- لا نحتاج لملف CSS خارجي في هذا الإصدار -->
+    <!-- <link rel="stylesheet" href="styles/style.css"> -->
 </head>
 <body>
     <div class="container">
@@ -23,15 +137,18 @@
         <main class="main-content">
             <div class="project-description">
                 <h2>برنامج يقدم خدمة للمجتمع المحلي المدرسي</h2>
+                <!-- تم حذف النص الإضافي هنا -->
             </div>
 
             <div class="login-options">
                 <div class="option-card" onclick="navigateTo('admin.html')">
                     <h2>دخول مشرف البرنامج</h2>
+                    <!-- تم حذف النص الإضافي هنا -->
                 </div>
                 
                 <div class="option-card" onclick="navigateTo('student.html')">
                     <h2>دخول الزائر</h2>
+                    <!-- تم حذف النص الإضافي هنا -->
                 </div>
             </div>
         </main>
