@@ -147,6 +147,210 @@ function renderContent(content) {
     }
 }
 
+// دالة لإضافة نظام التقييم
+function addRatingSystem(contentElement, contentId, hasViewed) {
+    if (!hasViewed) return;
+    
+    const ratingSection = document.createElement('div');
+    ratingSection.className = 'rating-section';
+    ratingSection.innerHTML = `
+        <div class="rating-title">
+            <h4>تقييم المحتوى:</h4>
+        </div>
+        <div class="stars-rating">
+            <div class="stars-container">
+                <span class="star" data-rating="5">★</span>
+                <span class="star" data-rating="4">★</span>
+                <span class="star" data-rating="3">★</span>
+                <span class="star" data-rating="2">★</span>
+                <span class="star" data-rating="1">★</span>
+            </div>
+            <div class="rating-labels">
+                <span class="rating-label" data-rating="5">ممتاز</span>
+                <span class="rating-label" data-rating="4">جيد جداً</span>
+                <span class="rating-label" data-rating="3">جيد</span>
+                <span class="rating-label" data-rating="2">مقبول</span>
+                <span class="rating-label" data-rating="1">ضعيف</span>
+            </div>
+        </div>
+        <div class="rating-feedback hidden">
+            <div class="form-group">
+                <label for="ratingNote-${contentId}">ملاحظاتك (اختياري):</label>
+                <textarea id="ratingNote-${contentId}" rows="3" placeholder="اكتب ملاحظاتك حول المحتوى..."></textarea>
+            </div>
+            <button class="btn submit-rating" data-content-id="${contentId}">تسجيل التقييم</button>
+        </div>
+        <div class="current-rating hidden">
+            <p class="rating-result">تقييمك: <span class="rating-stars"></span> <span class="rating-text"></span></p>
+            <p class="rating-note"></p>
+        </div>
+    `;
+    
+    contentElement.querySelector('.file-actions').appendChild(ratingSection);
+    
+    // إضافة event listeners للنجوم
+    const stars = ratingSection.querySelectorAll('.star');
+    const ratingLabels = ratingSection.querySelectorAll('.rating-label');
+    const ratingFeedback = ratingSection.querySelector('.rating-feedback');
+    const currentRating = ratingSection.querySelector('.current-rating');
+    
+    // التحقق إذا كان قد تم التقييم مسبقاً
+    const existingRating = getContentRating(contentId);
+    if (existingRating) {
+        showCurrentRating(ratingSection, existingRating);
+        return;
+    }
+    
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = parseInt(this.getAttribute('data-rating'));
+            setRating(stars, ratingLabels, rating);
+            ratingFeedback.classList.remove('hidden');
+        });
+        
+        star.addEventListener('mouseover', function() {
+            const rating = parseInt(this.getAttribute('data-rating'));
+            highlightStars(stars, ratingLabels, rating);
+        });
+    });
+    
+    ratingSection.addEventListener('mouseleave', function() {
+        const currentActive = ratingSection.querySelector('.star.active');
+        if (!currentActive) return;
+        const rating = parseInt(currentActive.getAttribute('data-rating'));
+        highlightStars(stars, ratingLabels, rating);
+    });
+    
+    // زر تسجيل التقييم
+    const submitBtn = ratingSection.querySelector('.submit-rating');
+    submitBtn.addEventListener('click', function() {
+        const contentId = this.getAttribute('data-content-id');
+        const activeStar = ratingSection.querySelector('.star.active');
+        if (!activeStar) {
+            alert('يرجى اختيار تقييم أولاً');
+            return;
+        }
+        
+        const rating = parseInt(activeStar.getAttribute('data-rating'));
+        const note = document.getElementById(`ratingNote-${contentId}`).value.trim();
+        
+        saveContentRating(contentId, rating, note);
+        showCurrentRating(ratingSection, { rating, note });
+        
+        alert('شكراً لك! تم تسجيل تقييمك بنجاح 🌟');
+    });
+}
+
+// دالة لتحديد التقييم
+function setRating(stars, labels, rating) {
+    stars.forEach(star => {
+        const starRating = parseInt(star.getAttribute('data-rating'));
+        if (starRating <= rating) {
+            star.classList.add('active');
+        } else {
+            star.classList.remove('active');
+        }
+    });
+    
+    labels.forEach(label => {
+        const labelRating = parseInt(label.getAttribute('data-rating'));
+        if (labelRating === rating) {
+            label.classList.add('active');
+        } else {
+            label.classList.remove('active');
+        }
+    });
+}
+
+// دالة لتظليل النجوم
+function highlightStars(stars, labels, rating) {
+    stars.forEach(star => {
+        const starRating = parseInt(star.getAttribute('data-rating'));
+        if (starRating <= rating) {
+            star.classList.add('hover');
+        } else {
+            star.classList.remove('hover');
+        }
+    });
+    
+    labels.forEach(label => {
+        const labelRating = parseInt(label.getAttribute('data-rating'));
+        if (labelRating === rating) {
+            label.classList.add('hover');
+        } else {
+            label.classList.remove('hover');
+        }
+    });
+}
+
+// دالة لعرض التقييم الحالي
+function showCurrentRating(ratingSection, ratingData) {
+    const stars = ratingSection.querySelectorAll('.star');
+    const labels = ratingSection.querySelectorAll('.rating-label');
+    const ratingFeedback = ratingSection.querySelector('.rating-feedback');
+    const currentRating = ratingSection.querySelector('.current-rating');
+    const ratingStars = currentRating.querySelector('.rating-stars');
+    const ratingText = currentRating.querySelector('.rating-text');
+    const ratingNote = currentRating.querySelector('.rating-note');
+    
+    // تعيين النجوم
+    setRating(stars, labels, ratingData.rating);
+    
+    // تعيين النص حسب التقييم
+    const ratingTexts = {
+        1: 'ضعيف',
+        2: 'مقبول', 
+        3: 'جيد',
+        4: 'جيد جداً',
+        5: 'ممتاز'
+    };
+    
+    ratingStars.innerHTML = '★'.repeat(ratingData.rating) + '☆'.repeat(5 - ratingData.rating);
+    ratingText.textContent = ratingTexts[ratingData.rating];
+    
+    // عرض الملاحظة إذا وجدت
+    if (ratingData.note) {
+        ratingNote.innerHTML = `<strong>ملاحظاتك:</strong> ${ratingData.note}`;
+    } else {
+        ratingNote.innerHTML = '';
+    }
+    
+    ratingFeedback.classList.add('hidden');
+    currentRating.classList.remove('hidden');
+}
+
+// دالة للحصول على تقييم المحتوى
+function getContentRating(contentId) {
+    const ratings = JSON.parse(localStorage.getItem('contentRatings')) || [];
+    const studentRating = ratings.find(r => 
+        r.contentId === contentId && r.studentId === window.currentStudent.id
+    );
+    return studentRating;
+}
+
+// دالة لحفظ تقييم المحتوى
+function saveContentRating(contentId, rating, note) {
+    const ratings = JSON.parse(localStorage.getItem('contentRatings')) || [];
+    
+    // إزالة أي تقييم سابق لنفس المحتوى والطالب
+    const filteredRatings = ratings.filter(r => 
+        !(r.contentId === contentId && r.studentId === window.currentStudent.id)
+    );
+    
+    // إضافة التقييم الجديد
+    filteredRatings.push({
+        contentId: contentId,
+        studentId: window.currentStudent.id,
+        studentName: window.currentStudent.name,
+        rating: rating,
+        note: note,
+        date: new Date().toLocaleString('ar-SA'),
+        timestamp: new Date().getTime()
+    });
+    
+    localStorage.setItem('contentRatings', JSON.stringify(filteredRatings));
+}
+
 // الكود الرئيسي
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('studentLoginForm');
@@ -216,6 +420,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     studentViewContent(contentId, contentTitle);
                 });
             }
+            
+            // إضافة نظام التقييم للمحتوى
+            addRatingSystem(contentElement, content.id, hasViewed);
         });
     };
     
