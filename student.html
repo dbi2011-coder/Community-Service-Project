@@ -20,23 +20,28 @@
         </header>
 
         <main class="main-content">
-            <div class="login-form">
-                <h2>تسجيل الدخول للزوار</h2>
-                <form id="studentLoginForm">
-                    <div class="form-group">
-                        <label for="studentName">الاسم الكامل:</label>
-                        <input type="text" id="studentName" required placeholder="أدخل الاسم الكامل">
-                    </div>
-                    <div class="form-group">
-                        <label for="studentId">رقم الهوية:</label>
-                        <input type="text" id="studentId" required placeholder="أدخل رقم الهوية">
-                    </div>
-                    <div class="form-group">
-                        <label for="studentPhone">رقم الجوال:</label>
-                        <input type="tel" id="studentPhone" required placeholder="أدخل رقم الجوال">
-                    </div>
-                    <button type="submit" class="btn">الدخول</button>
-                </form>
+            <!-- قسم تسجيل الدخول -->
+            <div id="loginSection">
+                <div class="login-form">
+                    <h2>تسجيل الدخول للزوار</h2>
+                    <form id="studentLoginForm">
+                        <div class="form-group">
+                            <label for="studentName">الاسم الكامل:</label>
+                            <input type="text" id="studentName" required placeholder="أدخل الاسم الكامل">
+                        </div>
+                        <div class="form-group">
+                            <label for="studentId">رقم الهوية:</label>
+                            <input type="text" id="studentId" required placeholder="أدخل رقم الهوية (10 أرقام)" maxlength="10">
+                            <small style="color: #666; font-size: 12px;">يجب أن يكون 10 أرقام</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentPhone">رقم الجوال:</label>
+                            <input type="tel" id="studentPhone" required placeholder="أدخل رقم الجوال (يبدأ بـ 05)" maxlength="10">
+                            <small style="color: #666; font-size: 12px;">يجب أن يبدأ بـ 05 ويتبعه 8 أرقام</small>
+                        </div>
+                        <button type="submit" class="btn">الدخول</button>
+                    </form>
+                </div>
             </div>
 
             <!-- قسم المحتوى (يظهر بعد تسجيل الدخول) -->
@@ -56,6 +61,10 @@
                     <div id="filesContainer">
                         <!-- سيتم ملؤها بالملفات -->
                     </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn secondary" onclick="location.reload()">تسجيل الخروج</button>
                 </div>
             </div>
         </main>
