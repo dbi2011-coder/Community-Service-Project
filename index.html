@@ -23,15 +23,28 @@
         <main class="main-content">
             <div class="project-description">
                 <h2>برنامج يقدم خدمة للمجتمع المحلي المدرسي</h2>
+                <p>نظام متكامل لإدارة المحتوى ومتابعة المطلعين</p>
             </div>
 
             <div class="login-options">
                 <div class="option-card" onclick="navigateTo('admin.html')">
                     <h2>دخول مشرف البرنامج</h2>
+                    <p>إدارة المحتوى ومتابعة التقارير</p>
                 </div>
                 
                 <div class="option-card" onclick="navigateTo('student.html')">
                     <h2>دخول الزائر</h2>
+                    <p>الاطلاع على المحتوى والتقييم</p>
+                </div>
+            </div>
+
+            <!-- قسم أدوات التطوير (يمكن إخفاؤه في الإصدار النهائي) -->
+            <div class="dev-tools" style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px; text-align: center;">
+                <h3>أدوات التطوير</h3>
+                <div class="btn-group">
+                    <button class="btn secondary" onclick="checkAppStatus()">فحص الحالة</button>
+                    <button class="btn secondary" onclick="addSampleData()">بيانات تجريبية</button>
+                    <button class="btn secondary" onclick="clearAllData()">مسح الكل</button>
                 </div>
             </div>
         </main>
