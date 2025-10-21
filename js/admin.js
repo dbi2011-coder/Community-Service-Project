@@ -15,12 +15,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileWithNoteInput = document.getElementById('fileWithNoteInput');
     const uploadForm = document.getElementById('uploadForm');
     const filesList = document.getElementById('filesList');
-    const visitorsTableBody = document.getElementById('visitorsTableBody');
-    const visitorsDataTableBody = document.getElementById('visitorsDataTableBody');
+    const studentsTableBody = document.getElementById('studentsTableBody');
+    const studentsDataTableBody = document.getElementById('studentsDataTableBody');
     const printBtn = document.getElementById('printBtn');
-    const searchVisitor = document.getElementById('searchVisitor');
-    const editVisitorModal = document.getElementById('editVisitorModal');
-    const editVisitorForm = document.getElementById('editVisitorForm');
+    const searchStudent = document.getElementById('searchStudent');
+    const editStudentModal = document.getElementById('editStudentModal');
+    const editStudentForm = document.getElementById('editStudentForm');
     const cancelEdit = document.getElementById('cancelEdit');
     const closeModal = document.querySelector('.close-modal');
 
@@ -128,34 +128,34 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // البحث عن زائر
-    searchVisitor.addEventListener('input', function() {
-        loadVisitorsData(this.value.trim());
+    searchStudent.addEventListener('input', function() {
+        loadStudentsData(this.value.trim());
     });
 
     // إغلاق نافذة التعديل
     closeModal.addEventListener('click', function() {
-        editVisitorModal.classList.add('hidden');
+        editStudentModal.classList.add('hidden');
     });
 
     cancelEdit.addEventListener('click', function() {
-        editVisitorModal.classList.add('hidden');
+        editStudentModal.classList.add('hidden');
     });
 
     // إغلاق النافذة عند النقر خارجها
-    editVisitorModal.addEventListener('click', function(e) {
-        if (e.target === editVisitorModal) {
-            editVisitorModal.classList.add('hidden');
+    editStudentModal.addEventListener('click', function(e) {
+        if (e.target === editStudentModal) {
+            editStudentModal.classList.add('hidden');
         }
     });
 
     // حفظ تعديلات الزائر
-    editVisitorForm.addEventListener('submit', function(e) {
+    editStudentForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        const originalId = document.getElementById('editVisitorOriginalId').value;
-        const name = document.getElementById('editVisitorName').value.trim();
-        const id = document.getElementById('editVisitorId').value.trim();
-        const phone = document.getElementById('editVisitorPhone').value.trim();
+        const originalId = document.getElementById('editStudentOriginalId').value;
+        const name = document.getElementById('editStudentName').value.trim();
+        const id = document.getElementById('editStudentId').value.trim();
+        const phone = document.getElementById('editStudentPhone').value.trim();
         
         if (!name || !id || !phone) {
             alert('يرجى ملء جميع الحقول');
@@ -172,9 +172,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        updateVisitorData(originalId, { name, id, phone });
-        editVisitorModal.classList.add('hidden');
-        loadVisitorsData();
+        updateStudentData(originalId, { name, id, phone });
+        editStudentModal.classList.add('hidden');
+        loadStudentsData();
         alert('تم تحديث بيانات الزائر بنجاح!');
     });
 
@@ -189,8 +189,8 @@ document.addEventListener('DOMContentLoaded', function() {
         adminLoginSection.classList.add('hidden');
         adminPanel.classList.remove('hidden');
         loadFilesList();
-        loadVisitorsList();
-        loadVisitorsData();
+        loadStudentsList();
+        loadStudentsData();
     }
 
     function addNewContent(type, title, content, note = '') {
@@ -264,134 +264,134 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function loadVisitorsList() {
-        const visitorsLog = JSON.parse(localStorage.getItem('visitorsLog')) || [];
-        visitorsTableBody.innerHTML = '';
+    function loadStudentsList() {
+        const studentsLog = JSON.parse(localStorage.getItem('studentsLog')) || [];
+        studentsTableBody.innerHTML = '';
         
-        if (visitorsLog.length === 0) {
-            visitorsTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">لا توجد بيانات</td></tr>';
+        if (studentsLog.length === 0) {
+            studentsTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">لا توجد بيانات</td></tr>';
             return;
         }
         
-        visitorsLog.sort((a, b) => b.timestamp - a.timestamp);
+        studentsLog.sort((a, b) => b.timestamp - a.timestamp);
         
-        visitorsLog.forEach(log => {
+        studentsLog.forEach(log => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${log.visitorName}</td>
-                <td>${log.visitorId}</td>
-                <td>${log.visitorPhone}</td>
+                <td>${log.studentName}</td>
+                <td>${log.studentId}</td>
+                <td>${log.studentPhone}</td>
                 <td>${log.contentTitle}</td>
                 <td>${log.date}</td>
                 <td>${log.time}</td>
             `;
-            visitorsTableBody.appendChild(row);
+            studentsTableBody.appendChild(row);
         });
     }
 
-    function loadVisitorsData(searchTerm = '') {
-        const visitorsData = getVisitorsData();
-        visitorsDataTableBody.innerHTML = '';
+    function loadStudentsData(searchTerm = '') {
+        const studentsData = getStudentsData();
+        studentsDataTableBody.innerHTML = '';
         
-        let filteredVisitors = visitorsData;
+        let filteredStudents = studentsData;
         if (searchTerm) {
-            filteredVisitors = visitorsData.filter(visitor => 
-                visitor.name.includes(searchTerm) || 
-                visitor.id.includes(searchTerm) ||
-                visitor.phone.includes(searchTerm)
+            filteredStudents = studentsData.filter(student => 
+                student.name.includes(searchTerm) || 
+                student.id.includes(searchTerm) ||
+                student.phone.includes(searchTerm)
             );
         }
         
-        if (filteredVisitors.length === 0) {
-            visitorsDataTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">لا توجد بيانات</td></tr>';
+        if (filteredStudents.length === 0) {
+            studentsDataTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">لا توجد بيانات</td></tr>';
             return;
         }
         
-        filteredVisitors.forEach(visitor => {
+        filteredStudents.forEach(student => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${visitor.name}</td>
-                <td>${visitor.id}</td>
-                <td>${visitor.phone}</td>
-                <td>${visitor.firstLogin}</td>
+                <td>${student.name}</td>
+                <td>${student.id}</td>
+                <td>${student.phone}</td>
+                <td>${student.firstLogin}</td>
                 <td>
-                    <button class="btn edit-btn" onclick="openEditVisitorModal('${visitor.id}')">تعديل</button>
-                    <button class="btn delete-btn" onclick="deleteVisitor('${visitor.id}')">حذف</button>
+                    <button class="btn edit-btn" onclick="openEditStudentModal('${student.id}')">تعديل</button>
+                    <button class="btn delete-btn" onclick="deleteStudent('${student.id}')">حذف</button>
                 </td>
             `;
-            visitorsDataTableBody.appendChild(row);
+            studentsDataTableBody.appendChild(row);
         });
     }
 
-    function openEditVisitorModal(visitorId) {
-        const visitorsData = getVisitorsData();
-        const visitor = visitorsData.find(v => v.id === visitorId);
+    function openEditStudentModal(studentId) {
+        const studentsData = getStudentsData();
+        const student = studentsData.find(s => s.id === studentId);
         
-        if (visitor) {
-            document.getElementById('editVisitorOriginalId').value = visitor.id;
-            document.getElementById('editVisitorName').value = visitor.name;
-            document.getElementById('editVisitorId').value = visitor.id;
-            document.getElementById('editVisitorPhone').value = visitor.phone;
-            editVisitorModal.classList.remove('hidden');
+        if (student) {
+            document.getElementById('editStudentOriginalId').value = student.id;
+            document.getElementById('editStudentName').value = student.name;
+            document.getElementById('editStudentId').value = student.id;
+            document.getElementById('editStudentPhone').value = student.phone;
+            editStudentModal.classList.remove('hidden');
         }
     }
 
-    function updateVisitorData(originalId, newData) {
-        const visitorsData = getVisitorsData();
-        const visitorIndex = visitorsData.findIndex(v => v.id === originalId);
+    function updateStudentData(originalId, newData) {
+        const studentsData = getStudentsData();
+        const studentIndex = studentsData.findIndex(s => s.id === originalId);
         
-        if (visitorIndex !== -1) {
+        if (studentIndex !== -1) {
             // تحديث بيانات الزائر
-            visitorsData[visitorIndex] = {
-                ...visitorsData[visitorIndex],
+            studentsData[studentIndex] = {
+                ...studentsData[studentIndex],
                 ...newData
             };
             
             // تحديث سجل المطلعين إذا تغير رقم الهوية
             if (originalId !== newData.id) {
-                updateVisitorsLog(originalId, newData.id, newData.name, newData.phone);
+                updateStudentsLog(originalId, newData.id, newData.name, newData.phone);
             }
             
-            localStorage.setItem('visitorsData', JSON.stringify(visitorsData));
+            localStorage.setItem('studentsData', JSON.stringify(studentsData));
         }
     }
 
-    function updateVisitorsLog(oldId, newId, newName, newPhone) {
-        const visitorsLog = JSON.parse(localStorage.getItem('visitorsLog')) || [];
-        const updatedLog = visitorsLog.map(log => {
-            if (log.visitorId === oldId) {
+    function updateStudentsLog(oldId, newId, newName, newPhone) {
+        const studentsLog = JSON.parse(localStorage.getItem('studentsLog')) || [];
+        const updatedLog = studentsLog.map(log => {
+            if (log.studentId === oldId) {
                 return {
                     ...log,
-                    visitorId: newId,
-                    visitorName: newName,
-                    visitorPhone: newPhone
+                    studentId: newId,
+                    studentName: newName,
+                    studentPhone: newPhone
                 };
             }
             return log;
         });
-        localStorage.setItem('visitorsLog', JSON.stringify(updatedLog));
-        loadVisitorsList();
+        localStorage.setItem('studentsLog', JSON.stringify(updatedLog));
+        loadStudentsList();
     }
 
-    function deleteVisitor(visitorId) {
+    function deleteStudent(studentId) {
         if (confirm('هل أنت متأكد من حذف هذا الزائر؟ سيتم حذف جميع سجلات الاطلاع الخاصة به.')) {
-            const visitorsData = getVisitorsData();
-            const filteredVisitors = visitorsData.filter(visitor => visitor.id !== visitorId);
-            localStorage.setItem('visitorsData', JSON.stringify(filteredVisitors));
+            const studentsData = getStudentsData();
+            const filteredStudents = studentsData.filter(student => student.id !== studentId);
+            localStorage.setItem('studentsData', JSON.stringify(filteredStudents));
             
             // حذف سجلات الاطلاع الخاصة بالزائر
-            const visitorsLog = JSON.parse(localStorage.getItem('visitorsLog')) || [];
-            const filteredLog = visitorsLog.filter(log => log.visitorId !== visitorId);
-            localStorage.setItem('visitorsLog', JSON.stringify(filteredLog));
+            const studentsLog = JSON.parse(localStorage.getItem('studentsLog')) || [];
+            const filteredLog = studentsLog.filter(log => log.studentId !== studentId);
+            localStorage.setItem('studentsLog', JSON.stringify(filteredLog));
             
-            loadVisitorsData();
-            loadVisitorsList();
+            loadStudentsData();
+            loadStudentsList();
             alert('تم حذف الزائر بنجاح!');
         }
     }
 
-    function getVisitorsData() {
-        return JSON.parse(localStorage.getItem('visitorsData')) || [];
+    function getStudentsData() {
+        return JSON.parse(localStorage.getItem('studentsData')) || [];
     }
 
     function isValidUrl(string) {
@@ -413,12 +413,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // جعل الدوال متاحة globally
     window.adminDeleteContent = adminDeleteContent;
-    window.openEditVisitorModal = openEditVisitorModal;
-    window.deleteVisitor = deleteVisitor;
+    window.openEditStudentModal = openEditStudentModal;
+    window.deleteStudent = deleteStudent;
     
     // تحديث القوائم كل 5 ثواني
     setInterval(() => {
-        loadVisitorsList();
-        loadVisitorsData();
+        loadStudentsList();
+        loadStudentsData();
     }, 5000);
 });
