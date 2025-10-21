@@ -10,7 +10,7 @@
     <div class="container">
         <header>
             <div class="logo">
-                <img src="assets/logo.png" alt="شعار المشروع" id="logo-img">
+                <img src="assets/logo.png" alt="شعار المشروع" id="logo-img" onerror="this.style.display='none'">
             </div>
             <h1>برنامج مشروع الخدمة المجتمعية</h1>
             <div class="credits">
@@ -22,18 +22,18 @@
         <main class="main-content">
             <div class="login-form">
                 <h2>تسجيل الدخول للزوار</h2>
-                <form id="visitorLoginForm">
+                <form id="studentLoginForm">
                     <div class="form-group">
-                        <label for="visitorName">الاسم الكامل:</label>
-                        <input type="text" id="visitorName" required placeholder="أدخل الاسم الكامل">
+                        <label for="studentName">الاسم الكامل:</label>
+                        <input type="text" id="studentName" required placeholder="أدخل الاسم الكامل">
                     </div>
                     <div class="form-group">
-                        <label for="visitorId">رقم الهوية:</label>
-                        <input type="text" id="visitorId" required placeholder="أدخل رقم الهوية (10 أرقام)" maxlength="10">
+                        <label for="studentId">رقم الهوية:</label>
+                        <input type="text" id="studentId" required placeholder="أدخل رقم الهوية">
                     </div>
                     <div class="form-group">
-                        <label for="visitorPhone">رقم الجوال:</label>
-                        <input type="tel" id="visitorPhone" required placeholder="أدخل رقم الجوال (يبدأ بـ 05)" maxlength="10">
+                        <label for="studentPhone">رقم الجوال:</label>
+                        <input type="tel" id="studentPhone" required placeholder="أدخل رقم الجوال">
                     </div>
                     <button type="submit" class="btn">الدخول</button>
                 </form>
