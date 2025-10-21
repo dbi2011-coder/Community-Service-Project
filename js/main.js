@@ -18,6 +18,10 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('studentsData', JSON.stringify([]));
     }
     
+    if (!localStorage.getItem('contentRatings')) {
+        localStorage.setItem('contentRatings', JSON.stringify([]));
+    }
+    
     // تحميل الشعار إذا كان موجوداً
     const logoImg = document.getElementById('logo-img');
     if (logoImg) {
