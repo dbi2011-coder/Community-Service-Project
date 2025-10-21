@@ -1,227 +1,152 @@
-// دالة لإضافة نظام التقييم - الإصدار المصحح
-function addRatingSystem(contentElement, contentId, hasViewed) {
-    if (!hasViewed) return;
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('studentLoginForm');
+    const contentSection = document.getElementById('contentSection');
+    const filesContainer = document.getElementById('filesContainer');
     
-    const ratingSection = document.createElement('div');
-    ratingSection.className = 'rating-section';
-    ratingSection.innerHTML = `
-        <div class="rating-title">
-            <h4>تقييم المحتوى:</h4>
-        </div>
-        <div class="stars-rating">
-            <div class="stars-container">
-                <span class="star" data-rating="5">★</span>
-                <span class="star" data-rating="4">★</span>
-                <span class="star" data-rating="3">★</span>
-                <span class="star" data-rating="2">★</span>
-                <span class="star" data-rating="1">★</span>
-            </div>
-            <div class="rating-labels">
-                <span class="rating-label" data-rating="5">ممتاز</span>
-                <span class="rating-label" data-rating="4">جيد جداً</span>
-                <span class="rating-label" data-rating="3">جيد</span>
-                <span class="rating-label" data-rating="2">مقبول</span>
-                <span class="rating-label" data-rating="1">ضعيف</span>
-            </div>
-        </div>
-        <div class="rating-feedback hidden">
-            <div class="form-group">
-                <label for="ratingNote-${contentId}">ملاحظاتك (اختياري):</label>
-                <textarea id="ratingNote-${contentId}" rows="3" placeholder="اكتب ملاحظاتك حول المحتوى..."></textarea>
-            </div>
-            <button class="btn submit-rating" data-content-id="${contentId}">تسجيل التقييم</button>
-        </div>
-        <div class="current-rating hidden">
-            <p class="rating-result">تقييمك: <span class="rating-stars"></span> <span class="rating-text"></span></p>
-            <p class="rating-note"></p>
-        </div>
-    `;
+    let currentStudent = '';
     
-    contentElement.querySelector('.file-actions').appendChild(ratingSection);
-    
-    // التحقق إذا كان قد تم التقييم مسبقاً
-    const existingRating = getContentRating(contentId);
-    if (existingRating) {
-        showCurrentRating(ratingSection, existingRating);
-        return;
-    }
-    
-    // إضافة event listeners بشكل صحيح - الإصلاح هنا
-    initializeRatingEvents(ratingSection, contentId);
-}
-
-// دالة جديدة لتهيئة أحداث التقييم
-function initializeRatingEvents(ratingSection, contentId) {
-    const stars = ratingSection.querySelectorAll('.star');
-    const ratingLabels = ratingSection.querySelectorAll('.rating-label');
-    const ratingFeedback = ratingSection.querySelector('.rating-feedback');
-    
-    let currentRating = 0;
-    
-    // إضافة event listeners للنجوم
-    stars.forEach(star => {
-        star.addEventListener('click', function(e) {
-            e.stopPropagation();
-            currentRating = parseInt(this.getAttribute('data-rating'));
-            setRating(stars, ratingLabels, currentRating);
-            ratingFeedback.classList.remove('hidden');
-        });
+    // التعامل مع تسجيل الدخول
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const studentName = document.getElementById('studentName').value.trim();
         
-        star.addEventListener('mouseover', function(e) {
-            e.stopPropagation();
-            const rating = parseInt(this.getAttribute('data-rating'));
-            highlightStars(stars, ratingLabels, rating);
-        });
-    });
-    
-    // إعادة التعيين عند مغادرة منطقة النجوم
-    ratingSection.addEventListener('mouseleave', function(e) {
-        if (currentRating > 0) {
-            highlightStars(stars, ratingLabels, currentRating);
-        } else {
-            resetStars(stars, ratingLabels);
+        if (studentName) {
+            currentStudent = studentName;
+            loginForm.classList.add('hidden');
+            contentSection.classList.remove('hidden');
+            loadStudentContents();
         }
     });
     
-    // زر تسجيل التقييم
-    const submitBtn = ratingSection.querySelector('.submit-rating');
-    submitBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
+    // تحميل محتويات الزائر
+    function loadStudentContents() {
+        const contents = getContents();
+        const studentLogs = getStudentLogs();
         
-        if (currentRating === 0) {
-            alert('يرجى اختيار تقييم أولاً');
+        filesContainer.innerHTML = '';
+        
+        if (contents.length === 0) {
+            filesContainer.innerHTML = '<p>لا توجد محتويات متاحة حالياً.</p>';
             return;
         }
         
-        const note = document.getElementById(`ratingNote-${contentId}`).value.trim();
-        saveContentRating(contentId, currentRating, note);
-        showCurrentRating(ratingSection, { rating: currentRating, note });
-        
-        alert('شكراً لك! تم تسجيل تقييمك بنجاح 🌟');
-    });
-}
-
-// دالة جديدة لإعادة تعيين النجوم
-function resetStars(stars, labels) {
-    stars.forEach(star => {
-        star.classList.remove('hover');
-    });
-    
-    labels.forEach(label => {
-        label.classList.remove('hover');
-    });
-}
-
-// دالة لتحديد التقييم
-function setRating(stars, labels, rating) {
-    stars.forEach(star => {
-        const starRating = parseInt(star.getAttribute('data-rating'));
-        if (starRating <= rating) {
-            star.classList.add('active');
-            star.classList.remove('hover');
-        } else {
-            star.classList.remove('active');
-            star.classList.remove('hover');
-        }
-    });
-    
-    labels.forEach(label => {
-        const labelRating = parseInt(label.getAttribute('data-rating'));
-        if (labelRating === rating) {
-            label.classList.add('active');
-            label.classList.remove('hover');
-        } else {
-            label.classList.remove('active');
-            label.classList.remove('hover');
-        }
-    });
-}
-
-// دالة لتظليل النجوم
-function highlightStars(stars, labels, rating) {
-    stars.forEach(star => {
-        const starRating = parseInt(star.getAttribute('data-rating'));
-        if (starRating <= rating) {
-            star.classList.add('hover');
-        } else {
-            star.classList.remove('hover');
-        }
-    });
-    
-    labels.forEach(label => {
-        const labelRating = parseInt(label.getAttribute('data-rating'));
-        if (labelRating === rating) {
-            label.classList.add('hover');
-        } else {
-            label.classList.remove('hover');
-        }
-    });
-}
-
-// دالة لعرض التقييم الحالي
-function showCurrentRating(ratingSection, ratingData) {
-    const stars = ratingSection.querySelectorAll('.star');
-    const labels = ratingSection.querySelectorAll('.rating-label');
-    const ratingFeedback = ratingSection.querySelector('.rating-feedback');
-    const currentRating = ratingSection.querySelector('.current-rating');
-    const ratingStars = currentRating.querySelector('.rating-stars');
-    const ratingText = currentRating.querySelector('.rating-text');
-    const ratingNote = currentRating.querySelector('.rating-note');
-    
-    // تعيين النجوم
-    setRating(stars, labels, ratingData.rating);
-    
-    // تعيين النص حسب التقييم
-    const ratingTexts = {
-        1: 'ضعيف',
-        2: 'مقبول', 
-        3: 'جيد',
-        4: 'جيد جداً',
-        5: 'ممتاز'
-    };
-    
-    ratingStars.innerHTML = '★'.repeat(ratingData.rating) + '☆'.repeat(5 - ratingData.rating);
-    ratingText.textContent = ratingTexts[ratingData.rating];
-    
-    // عرض الملاحظة إذا وجدت
-    if (ratingData.note) {
-        ratingNote.innerHTML = `<strong>ملاحظاتك:</strong> ${ratingData.note}`;
-    } else {
-        ratingNote.innerHTML = '';
+        contents.forEach(content => {
+            const hasViewed = studentLogs.some(log => 
+                log.studentName === currentStudent && log.contentId === content.id
+            );
+            
+            const contentElement = document.createElement('div');
+            contentElement.className = `student-file-item ${hasViewed ? 'viewed' : ''}`;
+            contentElement.innerHTML = `
+                <div class="file-header">
+                    <h3>${content.title}</h3>
+                    <span class="status">${hasViewed ? 'تم الاطلاع ✓' : 'لم يتم الاطلاع'}</span>
+                </div>
+                <div class="file-content">
+                    ${renderContent(content)}
+                </div>
+                <div class="file-actions">
+                    ${!hasViewed ? `
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="agreement-${content.id}">
+                           نعم اطلعت على المحتوى المرفق
+                        </label>
+                        <button class="btn view-btn" onclick="viewContent('${content.id}', '${content.title}')" disabled>
+                            تأكيد الاطلاع
+                        </button>
+                    ` : `
+                        <p class="viewed-message">تم تأكيد الاطلاع في: ${getViewDate(studentLogs, content.id)}</p>
+                    `}
+                </div>
+            `;
+            filesContainer.appendChild(contentElement);
+            
+            // إضافة event listener للcheckbox
+            if (!hasViewed) {
+                const checkbox = document.getElementById(`agreement-${content.id}`);
+                const viewBtn = contentElement.querySelector('.view-btn');
+                
+                checkbox.addEventListener('change', function() {
+                    viewBtn.disabled = !this.checked;
+                });
+            }
+        });
     }
     
-    ratingFeedback.classList.add('hidden');
-    currentRating.classList.remove('hidden');
-}
-
-// دالة للحصول على تقييم المحتوى
-function getContentRating(contentId) {
-    const ratings = JSON.parse(localStorage.getItem('contentRatings')) || [];
-    const studentRating = ratings.find(r => 
-        r.contentId === contentId && r.studentId === window.currentStudent.id
-    );
-    return studentRating;
-}
-
-// دالة لحفظ تقييم المحتوى
-function saveContentRating(contentId, rating, note) {
-    const ratings = JSON.parse(localStorage.getItem('contentRatings')) || [];
+    function renderContent(content) {
+        switch(content.type) {
+            case 'link':
+                return `
+                    <div class="content-preview">
+                        <p>رابط خارجي:</p>
+                        <a href="${content.content}" target="_blank" class="file-link" onclick="event.stopPropagation()">
+                            ${content.title} - اضغط هنا لفتح الرابط
+                        </a>
+                    </div>`;
+            case 'file':
+                return `
+                    <div class="content-preview">
+                        <p>ملف مرفوع:</p>
+                        <a href="${content.content}" download="${content.title}" class="file-link" onclick="event.stopPropagation()">
+                            ${content.title} - اضغط هنا لتحميل الملف
+                        </a>
+                    </div>`;
+            case 'text':
+                return `
+                    <div class="content-preview">
+                        <h4>${content.title}</h4>
+                        <p>${content.content}</p>
+                    </div>`;
+            case 'fileWithNote':
+                return `
+                    <div class="content-preview">
+                        <p>ملف مرفوع:</p>
+                        <a href="${content.content}" download="${content.title}" class="file-link" onclick="event.stopPropagation()">
+                            ${content.title} - اضغط هنا لتحميل الملف
+                        </a>
+                        ${content.note ? `
+                            <div class="note-section">
+                                <h4>ملاحظة:</h4>
+                                <p class="note-text">${content.note}</p>
+                            </div>
+                        ` : ''}
+                    </div>`;
+            default:
+                return '<p>نوع المحتوى غير معروف</p>';
+        }
+    }
     
-    // إزالة أي تقييم سابق لنفس المحتوى والطالب
-    const filteredRatings = ratings.filter(r => 
-        !(r.contentId === contentId && r.studentId === window.currentStudent.id)
-    );
+    function getContents() {
+        return JSON.parse(localStorage.getItem('adminContents')) || [];
+    }
     
-    // إضافة التقييم الجديد
-    filteredRatings.push({
-        contentId: contentId,
-        studentId: window.currentStudent.id,
-        studentName: window.currentStudent.name,
-        rating: rating,
-        note: note,
-        date: new Date().toLocaleString('ar-SA'),
-        timestamp: new Date().getTime()
-    });
+    function getStudentLogs() {
+        return JSON.parse(localStorage.getItem('studentsLog')) || [];
+    }
     
-    localStorage.setItem('contentRatings', JSON.stringify(filteredRatings));
-}
+    function getViewDate(logs, contentId) {
+        const log = logs.find(log => 
+            log.studentName === currentStudent && log.contentId === contentId
+        );
+        return log ? `${log.date} ${log.time}` : '';
+    }
+    
+    // جعل الدوال متاحة globally
+    window.viewContent = function(contentId, contentTitle) {
+        const studentsLog = getStudentLogs();
+        const now = new Date();
+        
+        studentsLog.push({
+            studentName: currentStudent,
+            contentId: contentId,
+            contentTitle: contentTitle,
+            date: now.toLocaleDateString('ar-SA'),
+            time: now.toLocaleTimeString('ar-SA'),
+            timestamp: now.getTime()
+        });
+        
+        localStorage.setItem('studentsLog', JSON.stringify(studentsLog));
+        loadStudentContents();
+        alert('تم تسجيل الاطلاع بنجاح!');
+    };
+});
