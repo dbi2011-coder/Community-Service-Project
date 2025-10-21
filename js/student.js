@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const loginForm = document.getElementById('visitorLoginForm');
+    const loginForm = document.getElementById('studentLoginForm');
     const contentSection = document.getElementById('contentSection');
     const filesContainer = document.getElementById('filesContainer');
-    const displayVisitorName = document.getElementById('displayVisitorName');
-    const displayVisitorId = document.getElementById('displayVisitorId');
-    const displayVisitorPhone = document.getElementById('displayVisitorPhone');
+    const displayStudentName = document.getElementById('displayStudentName');
+    const displayStudentId = document.getElementById('displayStudentId');
+    const displayStudentPhone = document.getElementById('displayStudentPhone');
     const loginTime = document.getElementById('loginTime');
     
-    let currentVisitor = {
+    let currentStudent = {
         name: '',
         id: '',
         phone: ''
@@ -16,62 +16,61 @@ document.addEventListener('DOMContentLoaded', function() {
     // التعامل مع تسجيل الدخول
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        const visitorName = document.getElementById('visitorName').value.trim();
-        const visitorId = document.getElementById('visitorId').value.trim();
-        const visitorPhone = document.getElementById('visitorPhone').value.trim();
+        const studentName = document.getElementById('studentName').value.trim();
+        const studentId = document.getElementById('studentId').value.trim();
+        const studentPhone = document.getElementById('studentPhone').value.trim();
         
-        if (visitorName && visitorId && visitorPhone) {
+        if (studentName && studentId && studentPhone) {
             // التحقق من صحة رقم الهوية (10 أرقام بالضبط)
-            if (!isValidId(visitorId)) {
+            if (!isValidId(studentId)) {
                 alert('يرجى إدخال رقم هوية صحيح (10 أرقام بالضبط)');
                 return;
             }
             
             // التحقق من صحة رقم الجوال
-            if (!isValidPhone(visitorPhone)) {
+            if (!isValidPhone(studentPhone)) {
                 alert('يرجى إدخال رقم جوال صحيح (يبدأ بـ 05 ويتبعه 8 أرقام)');
                 return;
             }
             
             // التحقق إذا كان رقم الهوية مسجل مسبقاً
-            const existingVisitor = getVisitorById(visitorId);
-            if (existingVisitor) {
+            const existingStudent = getStudentById(studentId);
+            if (existingStudent) {
                 // التحقق إذا كانت البيانات مطابقة للبيانات المسجلة
-                if (existingVisitor.name !== visitorName || existingVisitor.phone !== visitorPhone) {
-                    // عرض رسالة تنبيه عامة بدون إظهار البيانات المسجلة
+                if (existingStudent.name !== studentName || existingStudent.phone !== studentPhone) {
                     const alertMessage = `⚠️ تنبيه: رقم الهوية مسجل مسبقًا\n\n❗ يرجى التأكد من صحة الاسم ورقم الجوال\n🔐 في حال النسيان، الرجاء التواصل مع مشرف البرنامج`;
                     alert(alertMessage);
-                    return; // إوقاف عملية الدخول
+                    return;
                 }
             }
             
-            currentVisitor = {
-                name: visitorName,
-                id: visitorId,
-                phone: visitorPhone
+            currentStudent = {
+                name: studentName,
+                id: studentId,
+                phone: studentPhone
             };
             
-            // حفظ بيانات الزائر (فقط إذا كان زائر جديد أو بيانات مطابقة)
-            saveVisitorData(currentVisitor);
+            // حفظ بيانات الطالب
+            saveStudentData(currentStudent);
             
-            // عرض بيانات الزائر
-            displayVisitorName.textContent = currentVisitor.name;
-            displayVisitorId.textContent = currentVisitor.id;
-            displayVisitorPhone.textContent = currentVisitor.phone;
+            // عرض بيانات الطالب
+            displayStudentName.textContent = currentStudent.name;
+            displayStudentId.textContent = currentStudent.id;
+            displayStudentPhone.textContent = currentStudent.phone;
             loginTime.textContent = new Date().toLocaleString('ar-SA');
             
             loginForm.classList.add('hidden');
             contentSection.classList.remove('hidden');
-            loadVisitorContents();
+            loadStudentContents();
         } else {
             alert('يرجى ملء جميع الحقول المطلوبة');
         }
     });
     
-    // تحميل محتويات الزائر
-    function loadVisitorContents() {
+    // تحميل محتويات الطالب
+    function loadStudentContents() {
         const contents = getContents();
-        const visitorLogs = getVisitorLogs();
+        const studentLogs = getStudentLogs();
         
         filesContainer.innerHTML = '';
         
@@ -81,12 +80,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         contents.forEach(content => {
-            const hasViewed = visitorLogs.some(log => 
-                log.visitorId === currentVisitor.id && log.contentId === content.id
+            const hasViewed = studentLogs.some(log => 
+                log.studentId === currentStudent.id && log.contentId === content.id
             );
             
             const contentElement = document.createElement('div');
-            contentElement.className = `visitor-file-item ${hasViewed ? 'viewed' : ''}`;
+            contentElement.className = `student-file-item ${hasViewed ? 'viewed' : ''}`;
             contentElement.innerHTML = `
                 <div class="file-header">
                     <h3>${content.title}</h3>
@@ -101,11 +100,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             <input type="checkbox" id="agreement-${content.id}">
                            نعم اطلعت على المحتوى المرفق
                         </label>
-                        <button class="btn view-btn" onclick="viewContent('${content.id}', '${content.title}')" disabled>
+                        <button class="btn view-btn" onclick="studentViewContent('${content.id}', '${content.title}')" disabled>
                             تأكيد الاطلاع
                         </button>
                     ` : `
-                        <p class="viewed-message">تم تأكيد الاطلاع في: ${getViewDate(visitorLogs, content.id)}</p>
+                        <p class="viewed-message">تم تأكيد الاطلاع في: ${getViewDate(studentLogs, content.id)}</p>
                     `}
                 </div>
             `;
@@ -170,69 +169,62 @@ document.addEventListener('DOMContentLoaded', function() {
         return JSON.parse(localStorage.getItem('adminContents')) || [];
     }
     
-    function getVisitorLogs() {
-        return JSON.parse(localStorage.getItem('visitorsLog')) || [];
+    function getStudentLogs() {
+        return JSON.parse(localStorage.getItem('studentsLog')) || [];
     }
     
     function getViewDate(logs, contentId) {
         const log = logs.find(log => 
-            log.visitorId === currentVisitor.id && log.contentId === contentId
+            log.studentId === currentStudent.id && log.contentId === contentId
         );
         return log ? `${log.date} ${log.time}` : '';
     }
     
-    // دالة جديدة: البحث عن زائر برقم الهوية
-    function getVisitorById(visitorId) {
-        const visitorsData = getVisitorsData();
-        return visitorsData.find(v => v.id === visitorId);
+    function getStudentById(studentId) {
+        const studentsData = getStudentsData();
+        return studentsData.find(s => s.id === studentId);
     }
     
-    // دالة معدلة: حفظ بيانات الزائر (فقط للزائر الجديد)
-    function saveVisitorData(visitor) {
-        const visitorsData = getVisitorsData();
-        // البحث عن الزائر برقم الهوية
-        const existingVisitor = visitorsData.find(v => v.id === visitor.id);
+    function saveStudentData(student) {
+        const studentsData = getStudentsData();
+        const existingStudent = studentsData.find(s => s.id === student.id);
         
-        if (!existingVisitor) {
-            // إنشاء زائر جديد فقط إذا لم يكن موجوداً
-            visitorsData.push({
-                name: visitor.name,
-                id: visitor.id,
-                phone: visitor.phone,
+        if (!existingStudent) {
+            studentsData.push({
+                name: student.name,
+                id: student.id,
+                phone: student.phone,
                 firstLogin: new Date().toLocaleString('ar-SA'),
                 lastLogin: new Date().toLocaleString('ar-SA')
             });
-            localStorage.setItem('visitorsData', JSON.stringify(visitorsData));
+            localStorage.setItem('studentsData', JSON.stringify(studentsData));
             alert('تم تسجيل دخولك بنجاح! 🎉');
         } else {
-            // إذا كان الزائر موجوداً والبيانات مطابقة، نسمح بالدخول فقط
             alert('تم الدخول بنجاح! ✅');
         }
     }
     
-    function getVisitorsData() {
-        return JSON.parse(localStorage.getItem('visitorsData')) || [];
+    function getStudentsData() {
+        return JSON.parse(localStorage.getItem('studentsData')) || [];
     }
     
     function isValidId(id) {
-        // رقم الهوية يجب أن يكون 10 أرقام بالضبط
         return /^\d{10}$/.test(id);
     }
     
     function isValidPhone(phone) {
-        // رقم الجوال يجب أن يبدأ بـ 05 ويتبعه 8 أرقام
         return /^05\d{8}$/.test(phone);
     }
     
     // جعل الدوال متاحة globally
-    window.viewContent = function(contentId, contentTitle) {
-        const visitorsLog = getVisitorLogs();
+    window.studentViewContent = function(contentId, contentTitle) {
+        const studentsLog = getStudentLogs();
         const now = new Date();
         
-        visitorsLog.push({
-            visitorName: currentVisitor.name,
-            visitorId: currentVisitor.id,
-            visitorPhone: currentVisitor.phone,
+        studentsLog.push({
+            studentName: currentStudent.name,
+            studentId: currentStudent.id,
+            studentPhone: currentStudent.phone,
             contentId: contentId,
             contentTitle: contentTitle,
             date: now.toLocaleDateString('ar-SA'),
@@ -240,8 +232,8 @@ document.addEventListener('DOMContentLoaded', function() {
             timestamp: now.getTime()
         });
         
-        localStorage.setItem('visitorsLog', JSON.stringify(visitorsLog));
-        loadVisitorContents();
+        localStorage.setItem('studentsLog', JSON.stringify(studentsLog));
+        loadStudentContents();
         alert('تم تسجيل الاطلاع بنجاح!');
     };
 });
