@@ -10,12 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('adminContents', JSON.stringify([]));
     }
     
-    if (!localStorage.getItem('studentsLog')) {
-        localStorage.setItem('studentsLog', JSON.stringify([]));
+    if (!localStorage.getItem('visitorsLog')) {
+        localStorage.setItem('visitorsLog', JSON.stringify([]));
     }
     
-    if (!localStorage.getItem('studentsData')) {
-        localStorage.setItem('studentsData', JSON.stringify([]));
+    if (!localStorage.getItem('visitorsData')) {
+        localStorage.setItem('visitorsData', JSON.stringify([]));
     }
     
     if (!localStorage.getItem('contentRatings')) {
@@ -28,21 +28,5 @@ document.addEventListener('DOMContentLoaded', function() {
         logoImg.onerror = function() {
             this.style.display = 'none';
         };
-    }
-    
-    // إضافة event listeners لأزرار التنقل إذا كانت موجودة
-    const adminButton = document.querySelector('[onclick*="admin.html"]');
-    const studentButton = document.querySelector('[onclick*="student.html"]');
-    
-    if (adminButton) {
-        adminButton.addEventListener('click', function() {
-            navigateTo('admin.html');
-        });
-    }
-    
-    if (studentButton) {
-        studentButton.addEventListener('click', function() {
-            navigateTo('student.html');
-        });
     }
 });
